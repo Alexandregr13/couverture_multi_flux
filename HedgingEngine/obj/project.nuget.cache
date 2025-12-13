@@ -1,0 +1,18 @@
+{
+  "version": 2,
+  "dgSpecHash": "BvckzQrWMXKAbIDZDZiFkG2t7y+2Xdd6ml6c4l29OuymO9mnBNtHNLywn4/hYbysIno3DCVsLr9m1wCXgpll8A==",
+  "success": true,
+  "projectFilePath": "/home/alexandre/3A/PCPMF/PCMF/couverture_multi_flux/HedgingEngine/HedgingEngine.csproj",
+  "expectedPackageFiles": [
+    "/home/alexandre/.nuget/packages/csvhelper/30.0.1/csvhelper.30.0.1.nupkg.sha512",
+    "/home/alexandre/.nuget/packages/google.protobuf/3.33.2/google.protobuf.3.33.2.nupkg.sha512",
+    "/home/alexandre/.nuget/packages/grpc.core.api/2.71.0/grpc.core.api.2.71.0.nupkg.sha512",
+    "/home/alexandre/.nuget/packages/grpc.net.client/2.71.0/grpc.net.client.2.71.0.nupkg.sha512",
+    "/home/alexandre/.nuget/packages/grpc.net.common/2.71.0/grpc.net.common.2.71.0.nupkg.sha512",
+    "/home/alexandre/.nuget/packages/grpc.tools/2.76.0/grpc.tools.2.76.0.nupkg.sha512",
+    "/home/alexandre/.nuget/packages/mathnet.numerics/5.0.0/mathnet.numerics.5.0.0.nupkg.sha512",
+    "/home/alexandre/.nuget/packages/microsoft.extensions.logging.abstractions/6.0.0/microsoft.extensions.logging.abstractions.6.0.0.nupkg.sha512",
+    "/home/alexandre/.nuget/packages/multicashflow.common/1.0.2/multicashflow.common.1.0.2.nupkg.sha512"
+  ],
+  "logs": []
+}

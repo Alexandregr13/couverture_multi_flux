@@ -6,6 +6,9 @@
 - Cloner ce dépôt ou de copier son contenu sur un dépôt public.
 - Transférer le code ou la documentation fournis à un outil d'IA générative pour essayer d'engendrer automatiquement une solution au projet.
 
+  - gRPC : 1.76.0 (depuis ~/Téléchargements/grpc-install)
+  - PNL : depuis /home/alexandre/3A/projet-de-couverture-de-produits-derives/pnl-1.15.0/build
+
 ## Présentation
 
 L'objectif de ce projet est d'implémenter une application permettant de couvrir des produits dérivés dans un cadre plus général que celui du Projet de Couverture de Produits Dérivés: l'application développée permettra de couvrir des produits dérivés basés sur un calendrier réel, et versant plusieurs flux.
