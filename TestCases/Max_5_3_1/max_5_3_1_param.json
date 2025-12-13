@@ -1,0 +1,104 @@
+{
+  "assetDescription": {
+    "underlyingCurrencyCorrespondence": {
+      "id_0": "eur",
+      "id_1": "eur",
+      "id_2": "eur",
+      "id_3": "eur",
+      "id_4": "eur"
+    },
+    "currencyRates": {
+      "eur": 0.05
+    },
+    "domesticCurrencyId": "eur"
+  },
+  "rebalancingOracleDescription": {
+    "period": 1,
+    "type": "Fixed"
+  },
+  "numberOfDaysInOneYear": 252,
+  "payoffDescription": {
+    "type": "ConditionalMax",
+    "creationDate": "2025-01-06T00:00:00",
+    "paymentDates": [
+      "2025-03-06T00:00:00",
+      "2025-04-07T00:00:00",
+      "2025-05-06T00:00:00"
+    ],
+    "strikes": [
+      15,
+      16,
+      20
+    ]
+  },
+  "pricingParams": {
+    "underlyingPositions": {
+      "id_0": 0,
+      "id_1": 1,
+      "id_2": 2,
+      "id_3": 3,
+      "id_4": 4
+    },
+    "foreignCurrencyPositions": {},
+    "volatilities": [
+      0.18,
+      0.32,
+      0.22,
+      0.44,
+      0.39
+    ],
+    "correlations": [
+      [
+        1,
+        0.13,
+        -0.25,
+        -0.25,
+        -0.25
+      ],
+      [
+        0.13,
+        1,
+        -0.25,
+        -0.25,
+        -0.25
+      ],
+      [
+        -0.25,
+        -0.25,
+        1,
+        0.14,
+        0.14
+      ],
+      [
+        -0.25,
+        -0.25,
+        0.14,
+        1,
+        0.14
+      ],
+      [
+        -0.25,
+        -0.25,
+        0.14,
+        0.14,
+        1
+      ]
+    ],
+    "initialSpots": [
+      17,
+      20,
+      15,
+      14,
+      13
+    ],
+    "trends": [
+      0.31,
+      0.35,
+      0.32,
+      0.29,
+      0.34
+    ],
+    "sampleNb": 50000,
+    "relativeFiniteDifferenceStep": 0.1
+  }
+}
