@@ -5,7 +5,7 @@
 #include "pnl/pnl_vector.h"
 #include "pnl/pnl_matrix.h"
 #include "pnl/pnl_random.h"
-#include "MultiFlowCallOption.hpp"
+#include "Option.hpp"
 #include "BlackScholesModel.hpp"
 
 
@@ -19,7 +19,7 @@ public:
     double fdStep;
     int nSamples;
     double T;
-    MultiFlowCallOption *opt;
+    Option *opt;
     BlackScholesModel *model;
     PnlRng *rng;
 

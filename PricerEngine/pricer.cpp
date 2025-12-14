@@ -1,8 +1,11 @@
 #include <iostream>
 #include <cmath>
 #include <ctime>
+#include <algorithm>
 #include "json_reader.hpp"
 #include "pricer.hpp"
+#include "ConditionalBasketOption.hpp"
+#include "ConditionalMaxOption.hpp"
 
 BlackScholesPricer::BlackScholesPricer(nlohmann::json &jsonParams)
 {
@@ -12,10 +15,23 @@ BlackScholesPricer::BlackScholesPricer(nlohmann::json &jsonParams)
     jsonParams.at("DomesticInterestRate").get_to(interestRate);
     jsonParams.at("RelativeFiniteDifferenceStep").get_to(fdStep);
     jsonParams.at("SampleNb").get_to(nSamples);
+
+    std::string payoffType = "ConditionalBasket";
+    if (jsonParams.contains("PayoffType")) {
+        jsonParams.at("PayoffType").get_to(payoffType);
+    }
+
     nAssets = volatility->n;
     int nbTimeSteps = paymentDates->size;
     T = pnl_vect_get(paymentDates, nbTimeSteps - 1);
-    opt = new MultiFlowCallOption(T, nbTimeSteps, nAssets, interestRate, strikes, paymentDates);
+
+    // Create the appropriate option type based on PayoffType
+    if (payoffType == "ConditionalMax") {
+        opt = new ConditionalMaxOption(T, nbTimeSteps, nAssets, interestRate, strikes, paymentDates);
+    } else {
+        opt = new ConditionalBasketOption(T, nbTimeSteps, nAssets, interestRate, strikes, paymentDates);
+    }
+
     model = new BlackScholesModel(jsonParams);
     rng = pnl_rng_create(PNL_RNG_MERSENNE);
     pnl_rng_sseed(rng, time(NULL));
@@ -40,8 +56,6 @@ void BlackScholesPricer::print()
     pnl_vect_print_asrow(strikes);
     std::cout << "paymentDates: ";
     pnl_vect_print_asrow(paymentDates);
-    std::cout << "volatility: ";
-    pnl_mat_print(volatility);
 }
 
 void BlackScholesPricer::priceAndDeltas(const PnlMat *past, double currentDate, bool isMonitoringDate,
@@ -59,9 +73,13 @@ void BlackScholesPricer::priceAndDeltas(const PnlMat *past, double currentDate, 
 
     double delta_d, payoff, payoff_plus, payoff_minus;
 
-    int lastIndex = isMonitoringDate ? past->m - 1 : past->m - 2;
+    int lastIndex;
     if (currentDate == 0.0) {
         lastIndex = 0;
+    } else if (isMonitoringDate) {
+        lastIndex = past->m - 1;
+    } else {
+        lastIndex = std::max(0, past->m - 2);
     }
 
     for (int j = 0; j < nSamples; j++)

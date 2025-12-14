@@ -90,7 +90,7 @@ target_link_libraries(pricer_grpc_proto
     ${_PROTOBUF_LIBPROTOBUF}
 )
 
-add_executable(pricing_server pricing_server.cpp pricer.cpp json_reader.cpp BlackScholesModel.cpp Option.cpp MultiFlowCallOption.cpp)
+add_executable(pricing_server pricing_server.cpp pricer.cpp json_reader.cpp BlackScholesModel.cpp Option.cpp ConditionalBasketOption.cpp ConditionalMaxOption.cpp)
 target_link_libraries(pricing_server
     pricer_grpc_proto
     ${_REFLECTION}
