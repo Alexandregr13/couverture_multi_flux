@@ -155,6 +155,102 @@ test_json_reader/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_json_reader.dir/build.make CMakeFiles/test_json_reader.dir/build
 .PHONY : test_json_reader/fast
 
+BlackScholesModel.o: BlackScholesModel.cpp.o
+.PHONY : BlackScholesModel.o
+
+# target to build an object file
+BlackScholesModel.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/pricing_server.dir/build.make CMakeFiles/pricing_server.dir/BlackScholesModel.cpp.o
+.PHONY : BlackScholesModel.cpp.o
+
+BlackScholesModel.i: BlackScholesModel.cpp.i
+.PHONY : BlackScholesModel.i
+
+# target to preprocess a source file
+BlackScholesModel.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/pricing_server.dir/build.make CMakeFiles/pricing_server.dir/BlackScholesModel.cpp.i
+.PHONY : BlackScholesModel.cpp.i
+
+BlackScholesModel.s: BlackScholesModel.cpp.s
+.PHONY : BlackScholesModel.s
+
+# target to generate assembly for a file
+BlackScholesModel.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/pricing_server.dir/build.make CMakeFiles/pricing_server.dir/BlackScholesModel.cpp.s
+.PHONY : BlackScholesModel.cpp.s
+
+ConditionalBasketOption.o: ConditionalBasketOption.cpp.o
+.PHONY : ConditionalBasketOption.o
+
+# target to build an object file
+ConditionalBasketOption.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/pricing_server.dir/build.make CMakeFiles/pricing_server.dir/ConditionalBasketOption.cpp.o
+.PHONY : ConditionalBasketOption.cpp.o
+
+ConditionalBasketOption.i: ConditionalBasketOption.cpp.i
+.PHONY : ConditionalBasketOption.i
+
+# target to preprocess a source file
+ConditionalBasketOption.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/pricing_server.dir/build.make CMakeFiles/pricing_server.dir/ConditionalBasketOption.cpp.i
+.PHONY : ConditionalBasketOption.cpp.i
+
+ConditionalBasketOption.s: ConditionalBasketOption.cpp.s
+.PHONY : ConditionalBasketOption.s
+
+# target to generate assembly for a file
+ConditionalBasketOption.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/pricing_server.dir/build.make CMakeFiles/pricing_server.dir/ConditionalBasketOption.cpp.s
+.PHONY : ConditionalBasketOption.cpp.s
+
+ConditionalMaxOption.o: ConditionalMaxOption.cpp.o
+.PHONY : ConditionalMaxOption.o
+
+# target to build an object file
+ConditionalMaxOption.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/pricing_server.dir/build.make CMakeFiles/pricing_server.dir/ConditionalMaxOption.cpp.o
+.PHONY : ConditionalMaxOption.cpp.o
+
+ConditionalMaxOption.i: ConditionalMaxOption.cpp.i
+.PHONY : ConditionalMaxOption.i
+
+# target to preprocess a source file
+ConditionalMaxOption.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/pricing_server.dir/build.make CMakeFiles/pricing_server.dir/ConditionalMaxOption.cpp.i
+.PHONY : ConditionalMaxOption.cpp.i
+
+ConditionalMaxOption.s: ConditionalMaxOption.cpp.s
+.PHONY : ConditionalMaxOption.s
+
+# target to generate assembly for a file
+ConditionalMaxOption.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/pricing_server.dir/build.make CMakeFiles/pricing_server.dir/ConditionalMaxOption.cpp.s
+.PHONY : ConditionalMaxOption.cpp.s
+
+Option.o: Option.cpp.o
+.PHONY : Option.o
+
+# target to build an object file
+Option.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/pricing_server.dir/build.make CMakeFiles/pricing_server.dir/Option.cpp.o
+.PHONY : Option.cpp.o
+
+Option.i: Option.cpp.i
+.PHONY : Option.i
+
+# target to preprocess a source file
+Option.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/pricing_server.dir/build.make CMakeFiles/pricing_server.dir/Option.cpp.i
+.PHONY : Option.cpp.i
+
+Option.s: Option.cpp.s
+.PHONY : Option.s
+
+# target to generate assembly for a file
+Option.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/pricing_server.dir/build.make CMakeFiles/pricing_server.dir/Option.cpp.s
+.PHONY : Option.cpp.s
+
 json_reader.o: json_reader.cpp.o
 .PHONY : json_reader.o
 
@@ -313,6 +409,18 @@ help:
 	@echo "... pricer_grpc_proto"
 	@echo "... pricing_server"
 	@echo "... test_json_reader"
+	@echo "... BlackScholesModel.o"
+	@echo "... BlackScholesModel.i"
+	@echo "... BlackScholesModel.s"
+	@echo "... ConditionalBasketOption.o"
+	@echo "... ConditionalBasketOption.i"
+	@echo "... ConditionalBasketOption.s"
+	@echo "... ConditionalMaxOption.o"
+	@echo "... ConditionalMaxOption.i"
+	@echo "... ConditionalMaxOption.s"
+	@echo "... Option.o"
+	@echo "... Option.i"
+	@echo "... Option.s"
 	@echo "... json_reader.o"
 	@echo "... json_reader.i"
 	@echo "... json_reader.s"

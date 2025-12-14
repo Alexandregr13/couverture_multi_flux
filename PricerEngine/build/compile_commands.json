@@ -31,6 +31,30 @@
 },
 {
   "directory": "/home/alexandre/3A/PCPMF/PCMF/couverture_multi_flux/PricerEngine/build",
+  "command": "/usr/bin/c++ -DJSON_DIAGNOSTICS=0 -DJSON_USE_IMPLICIT_CONVERSIONS=1 -I/home/alexandre/3A/projet-de-couverture-de-produits-derives/pnl-1.15.0/build/include -I/home/alexandre/3A/PCPMF/PCMF/couverture_multi_flux/PricerEngine/build -isystem /home/alexandre/Téléchargements/grpc-install/include -g -o CMakeFiles/pricing_server.dir/BlackScholesModel.cpp.o -c /home/alexandre/3A/PCPMF/PCMF/couverture_multi_flux/PricerEngine/BlackScholesModel.cpp",
+  "file": "/home/alexandre/3A/PCPMF/PCMF/couverture_multi_flux/PricerEngine/BlackScholesModel.cpp",
+  "output": "CMakeFiles/pricing_server.dir/BlackScholesModel.cpp.o"
+},
+{
+  "directory": "/home/alexandre/3A/PCPMF/PCMF/couverture_multi_flux/PricerEngine/build",
+  "command": "/usr/bin/c++ -DJSON_DIAGNOSTICS=0 -DJSON_USE_IMPLICIT_CONVERSIONS=1 -I/home/alexandre/3A/projet-de-couverture-de-produits-derives/pnl-1.15.0/build/include -I/home/alexandre/3A/PCPMF/PCMF/couverture_multi_flux/PricerEngine/build -isystem /home/alexandre/Téléchargements/grpc-install/include -g -o CMakeFiles/pricing_server.dir/Option.cpp.o -c /home/alexandre/3A/PCPMF/PCMF/couverture_multi_flux/PricerEngine/Option.cpp",
+  "file": "/home/alexandre/3A/PCPMF/PCMF/couverture_multi_flux/PricerEngine/Option.cpp",
+  "output": "CMakeFiles/pricing_server.dir/Option.cpp.o"
+},
+{
+  "directory": "/home/alexandre/3A/PCPMF/PCMF/couverture_multi_flux/PricerEngine/build",
+  "command": "/usr/bin/c++ -DJSON_DIAGNOSTICS=0 -DJSON_USE_IMPLICIT_CONVERSIONS=1 -I/home/alexandre/3A/projet-de-couverture-de-produits-derives/pnl-1.15.0/build/include -I/home/alexandre/3A/PCPMF/PCMF/couverture_multi_flux/PricerEngine/build -isystem /home/alexandre/Téléchargements/grpc-install/include -g -o CMakeFiles/pricing_server.dir/ConditionalBasketOption.cpp.o -c /home/alexandre/3A/PCPMF/PCMF/couverture_multi_flux/PricerEngine/ConditionalBasketOption.cpp",
+  "file": "/home/alexandre/3A/PCPMF/PCMF/couverture_multi_flux/PricerEngine/ConditionalBasketOption.cpp",
+  "output": "CMakeFiles/pricing_server.dir/ConditionalBasketOption.cpp.o"
+},
+{
+  "directory": "/home/alexandre/3A/PCPMF/PCMF/couverture_multi_flux/PricerEngine/build",
+  "command": "/usr/bin/c++ -DJSON_DIAGNOSTICS=0 -DJSON_USE_IMPLICIT_CONVERSIONS=1 -I/home/alexandre/3A/projet-de-couverture-de-produits-derives/pnl-1.15.0/build/include -I/home/alexandre/3A/PCPMF/PCMF/couverture_multi_flux/PricerEngine/build -isystem /home/alexandre/Téléchargements/grpc-install/include -g -o CMakeFiles/pricing_server.dir/ConditionalMaxOption.cpp.o -c /home/alexandre/3A/PCPMF/PCMF/couverture_multi_flux/PricerEngine/ConditionalMaxOption.cpp",
+  "file": "/home/alexandre/3A/PCPMF/PCMF/couverture_multi_flux/PricerEngine/ConditionalMaxOption.cpp",
+  "output": "CMakeFiles/pricing_server.dir/ConditionalMaxOption.cpp.o"
+},
+{
+  "directory": "/home/alexandre/3A/PCPMF/PCMF/couverture_multi_flux/PricerEngine/build",
   "command": "/usr/bin/c++ -DJSON_DIAGNOSTICS=0 -DJSON_USE_IMPLICIT_CONVERSIONS=1 -I/home/alexandre/3A/projet-de-couverture-de-produits-derives/pnl-1.15.0/build/include -I/home/alexandre/3A/PCPMF/PCMF/couverture_multi_flux/PricerEngine/build -g -o CMakeFiles/test_json_reader.dir/json_reader.cpp.o -c /home/alexandre/3A/PCPMF/PCMF/couverture_multi_flux/PricerEngine/json_reader.cpp",
   "file": "/home/alexandre/3A/PCPMF/PCMF/couverture_multi_flux/PricerEngine/json_reader.cpp",
   "output": "CMakeFiles/test_json_reader.dir/json_reader.cpp.o"

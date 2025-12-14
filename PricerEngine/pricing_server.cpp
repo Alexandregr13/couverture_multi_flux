@@ -72,7 +72,7 @@ public:
     }
 
     Status Heartbeat(ServerContext *context, const Empty* input, ReqInfo *output) override {
-        output->set_domesticinterestrate(pricer.interestRate);
+        output->set_domesticinterestrate(pricer.model->interestRate); // modifier pour mettre dans model au lieu de pricer.interestRate
         output->set_relativefinitedifferencestep(pricer.fdStep);
         output->set_samplenb(pricer.nSamples);
         return Status::OK;

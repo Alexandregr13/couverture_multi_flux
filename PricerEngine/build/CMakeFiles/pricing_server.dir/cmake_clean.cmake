@@ -1,4 +1,12 @@
 file(REMOVE_RECURSE
+  "CMakeFiles/pricing_server.dir/BlackScholesModel.cpp.o"
+  "CMakeFiles/pricing_server.dir/BlackScholesModel.cpp.o.d"
+  "CMakeFiles/pricing_server.dir/ConditionalBasketOption.cpp.o"
+  "CMakeFiles/pricing_server.dir/ConditionalBasketOption.cpp.o.d"
+  "CMakeFiles/pricing_server.dir/ConditionalMaxOption.cpp.o"
+  "CMakeFiles/pricing_server.dir/ConditionalMaxOption.cpp.o.d"
+  "CMakeFiles/pricing_server.dir/Option.cpp.o"
+  "CMakeFiles/pricing_server.dir/Option.cpp.o.d"
   "CMakeFiles/pricing_server.dir/json_reader.cpp.o"
   "CMakeFiles/pricing_server.dir/json_reader.cpp.o.d"
   "CMakeFiles/pricing_server.dir/pricer.cpp.o"

@@ -111,11 +111,71 @@ CMakeFiles/pricing_server.dir/json_reader.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/pricing_server.dir/json_reader.cpp.s"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/alexandre/3A/PCPMF/PCMF/couverture_multi_flux/PricerEngine/json_reader.cpp -o CMakeFiles/pricing_server.dir/json_reader.cpp.s
 
+CMakeFiles/pricing_server.dir/BlackScholesModel.cpp.o: CMakeFiles/pricing_server.dir/flags.make
+CMakeFiles/pricing_server.dir/BlackScholesModel.cpp.o: /home/alexandre/3A/PCPMF/PCMF/couverture_multi_flux/PricerEngine/BlackScholesModel.cpp
+CMakeFiles/pricing_server.dir/BlackScholesModel.cpp.o: CMakeFiles/pricing_server.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/alexandre/3A/PCPMF/PCMF/couverture_multi_flux/PricerEngine/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/pricing_server.dir/BlackScholesModel.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/pricing_server.dir/BlackScholesModel.cpp.o -MF CMakeFiles/pricing_server.dir/BlackScholesModel.cpp.o.d -o CMakeFiles/pricing_server.dir/BlackScholesModel.cpp.o -c /home/alexandre/3A/PCPMF/PCMF/couverture_multi_flux/PricerEngine/BlackScholesModel.cpp
+
+CMakeFiles/pricing_server.dir/BlackScholesModel.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/pricing_server.dir/BlackScholesModel.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/alexandre/3A/PCPMF/PCMF/couverture_multi_flux/PricerEngine/BlackScholesModel.cpp > CMakeFiles/pricing_server.dir/BlackScholesModel.cpp.i
+
+CMakeFiles/pricing_server.dir/BlackScholesModel.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/pricing_server.dir/BlackScholesModel.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/alexandre/3A/PCPMF/PCMF/couverture_multi_flux/PricerEngine/BlackScholesModel.cpp -o CMakeFiles/pricing_server.dir/BlackScholesModel.cpp.s
+
+CMakeFiles/pricing_server.dir/Option.cpp.o: CMakeFiles/pricing_server.dir/flags.make
+CMakeFiles/pricing_server.dir/Option.cpp.o: /home/alexandre/3A/PCPMF/PCMF/couverture_multi_flux/PricerEngine/Option.cpp
+CMakeFiles/pricing_server.dir/Option.cpp.o: CMakeFiles/pricing_server.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/alexandre/3A/PCPMF/PCMF/couverture_multi_flux/PricerEngine/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/pricing_server.dir/Option.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/pricing_server.dir/Option.cpp.o -MF CMakeFiles/pricing_server.dir/Option.cpp.o.d -o CMakeFiles/pricing_server.dir/Option.cpp.o -c /home/alexandre/3A/PCPMF/PCMF/couverture_multi_flux/PricerEngine/Option.cpp
+
+CMakeFiles/pricing_server.dir/Option.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/pricing_server.dir/Option.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/alexandre/3A/PCPMF/PCMF/couverture_multi_flux/PricerEngine/Option.cpp > CMakeFiles/pricing_server.dir/Option.cpp.i
+
+CMakeFiles/pricing_server.dir/Option.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/pricing_server.dir/Option.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/alexandre/3A/PCPMF/PCMF/couverture_multi_flux/PricerEngine/Option.cpp -o CMakeFiles/pricing_server.dir/Option.cpp.s
+
+CMakeFiles/pricing_server.dir/ConditionalBasketOption.cpp.o: CMakeFiles/pricing_server.dir/flags.make
+CMakeFiles/pricing_server.dir/ConditionalBasketOption.cpp.o: /home/alexandre/3A/PCPMF/PCMF/couverture_multi_flux/PricerEngine/ConditionalBasketOption.cpp
+CMakeFiles/pricing_server.dir/ConditionalBasketOption.cpp.o: CMakeFiles/pricing_server.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/alexandre/3A/PCPMF/PCMF/couverture_multi_flux/PricerEngine/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/pricing_server.dir/ConditionalBasketOption.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/pricing_server.dir/ConditionalBasketOption.cpp.o -MF CMakeFiles/pricing_server.dir/ConditionalBasketOption.cpp.o.d -o CMakeFiles/pricing_server.dir/ConditionalBasketOption.cpp.o -c /home/alexandre/3A/PCPMF/PCMF/couverture_multi_flux/PricerEngine/ConditionalBasketOption.cpp
+
+CMakeFiles/pricing_server.dir/ConditionalBasketOption.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/pricing_server.dir/ConditionalBasketOption.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/alexandre/3A/PCPMF/PCMF/couverture_multi_flux/PricerEngine/ConditionalBasketOption.cpp > CMakeFiles/pricing_server.dir/ConditionalBasketOption.cpp.i
+
+CMakeFiles/pricing_server.dir/ConditionalBasketOption.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/pricing_server.dir/ConditionalBasketOption.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/alexandre/3A/PCPMF/PCMF/couverture_multi_flux/PricerEngine/ConditionalBasketOption.cpp -o CMakeFiles/pricing_server.dir/ConditionalBasketOption.cpp.s
+
+CMakeFiles/pricing_server.dir/ConditionalMaxOption.cpp.o: CMakeFiles/pricing_server.dir/flags.make
+CMakeFiles/pricing_server.dir/ConditionalMaxOption.cpp.o: /home/alexandre/3A/PCPMF/PCMF/couverture_multi_flux/PricerEngine/ConditionalMaxOption.cpp
+CMakeFiles/pricing_server.dir/ConditionalMaxOption.cpp.o: CMakeFiles/pricing_server.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/alexandre/3A/PCPMF/PCMF/couverture_multi_flux/PricerEngine/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/pricing_server.dir/ConditionalMaxOption.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/pricing_server.dir/ConditionalMaxOption.cpp.o -MF CMakeFiles/pricing_server.dir/ConditionalMaxOption.cpp.o.d -o CMakeFiles/pricing_server.dir/ConditionalMaxOption.cpp.o -c /home/alexandre/3A/PCPMF/PCMF/couverture_multi_flux/PricerEngine/ConditionalMaxOption.cpp
+
+CMakeFiles/pricing_server.dir/ConditionalMaxOption.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/pricing_server.dir/ConditionalMaxOption.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/alexandre/3A/PCPMF/PCMF/couverture_multi_flux/PricerEngine/ConditionalMaxOption.cpp > CMakeFiles/pricing_server.dir/ConditionalMaxOption.cpp.i
+
+CMakeFiles/pricing_server.dir/ConditionalMaxOption.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/pricing_server.dir/ConditionalMaxOption.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/alexandre/3A/PCPMF/PCMF/couverture_multi_flux/PricerEngine/ConditionalMaxOption.cpp -o CMakeFiles/pricing_server.dir/ConditionalMaxOption.cpp.s
+
 # Object files for target pricing_server
 pricing_server_OBJECTS = \
 "CMakeFiles/pricing_server.dir/pricing_server.cpp.o" \
 "CMakeFiles/pricing_server.dir/pricer.cpp.o" \
-"CMakeFiles/pricing_server.dir/json_reader.cpp.o"
+"CMakeFiles/pricing_server.dir/json_reader.cpp.o" \
+"CMakeFiles/pricing_server.dir/BlackScholesModel.cpp.o" \
+"CMakeFiles/pricing_server.dir/Option.cpp.o" \
+"CMakeFiles/pricing_server.dir/ConditionalBasketOption.cpp.o" \
+"CMakeFiles/pricing_server.dir/ConditionalMaxOption.cpp.o"
 
 # External object files for target pricing_server
 pricing_server_EXTERNAL_OBJECTS =
@@ -123,6 +183,10 @@ pricing_server_EXTERNAL_OBJECTS =
 pricing_server: CMakeFiles/pricing_server.dir/pricing_server.cpp.o
 pricing_server: CMakeFiles/pricing_server.dir/pricer.cpp.o
 pricing_server: CMakeFiles/pricing_server.dir/json_reader.cpp.o
+pricing_server: CMakeFiles/pricing_server.dir/BlackScholesModel.cpp.o
+pricing_server: CMakeFiles/pricing_server.dir/Option.cpp.o
+pricing_server: CMakeFiles/pricing_server.dir/ConditionalBasketOption.cpp.o
+pricing_server: CMakeFiles/pricing_server.dir/ConditionalMaxOption.cpp.o
 pricing_server: CMakeFiles/pricing_server.dir/build.make
 pricing_server: libpricer_grpc_proto.a
 pricing_server: /home/alexandre/Téléchargements/grpc-install/lib/libgrpc++_reflection.a
@@ -233,7 +297,7 @@ pricing_server: /home/alexandre/Téléchargements/grpc-install/lib/libabsl_raw_l
 pricing_server: /home/alexandre/Téléchargements/grpc-install/lib/libabsl_log_severity.a
 pricing_server: /usr/lib/x86_64-linux-gnu/liblapack.so
 pricing_server: CMakeFiles/pricing_server.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/alexandre/3A/PCPMF/PCMF/couverture_multi_flux/PricerEngine/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Linking CXX executable pricing_server"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/alexandre/3A/PCPMF/PCMF/couverture_multi_flux/PricerEngine/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Linking CXX executable pricing_server"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/pricing_server.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
