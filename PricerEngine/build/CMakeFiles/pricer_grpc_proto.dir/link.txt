@@ -1,2 +1,0 @@
-/usr/bin/ar qc libpricer_grpc_proto.a CMakeFiles/pricer_grpc_proto.dir/pricing.grpc.pb.cc.o CMakeFiles/pricer_grpc_proto.dir/pricing.pb.cc.o
-/usr/bin/ranlib libpricer_grpc_proto.a

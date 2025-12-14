@@ -1,2 +1,0 @@
-# Hashes of file build rules.
-ecb58cfb5b25f3f3fe50125893cda6db pricing.pb.cc

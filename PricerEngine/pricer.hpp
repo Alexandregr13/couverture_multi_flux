@@ -5,18 +5,23 @@
 #include "pnl/pnl_vector.h"
 #include "pnl/pnl_matrix.h"
 #include "pnl/pnl_random.h"
-#include "Option.hpp"
+#include "MultiFlowCallOption.hpp"
 #include "BlackScholesModel.hpp"
 
 
 class BlackScholesPricer {
 public:
-    Option *option;
-    BlackScholesModel *model;
+    PnlMat *volatility;
     PnlVect *paymentDates;
-    int nSamples;
-    PnlRng *rng;
+    PnlVect *strikes;
+    int nAssets;
+    double interestRate;
     double fdStep;
+    int nSamples;
+    double T;
+    MultiFlowCallOption *opt;
+    BlackScholesModel *model;
+    PnlRng *rng;
 
     BlackScholesPricer(nlohmann::json &jsonParams);
     ~BlackScholesPricer();

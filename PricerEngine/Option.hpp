@@ -1,42 +1,19 @@
-#ifndef OPTION_HPP
-#define OPTION_HPP
+#pragma once
 
-#include <iostream>
 #include "pnl/pnl_vector.h"
 #include "pnl/pnl_matrix.h"
-#include "json_reader.hpp"
 
 class Option
 {
 public:
-    PnlVect *strike;
-    PnlVect *paymentDate; // dates de versement
-    double intersertRate ;
+    double T;
+    int nbTimeSteps;
+    int size;
+    double r;
+    PnlVect *strikes;
+    PnlVect *dates;
 
-public:
-    Option();
-    /**
-     * Constructeur de parsing :
-     */
-    Option(const nlohmann::json &json );
-
-    /**
-     * Destructeur
-     */
-    virtual ~Option() ;
-
-    /**
-     * Calcule la valeur du payoff
-     *
-     * @param[in] matrix est une matrice  de taille (dates + 1)*size
-     *  ligne d'index i de la matrice continet la valeur de l'actif du sous-jacent à t = t_i
-     */
-    virtual double payOff(const PnlMat *matrix) = 0;
+    Option(double T_, int nbTimeSteps_, int size_, double r_, PnlVect *strikes_, PnlVect *dates_);
+    virtual ~Option();
+    virtual double payoff(const PnlMat *path) = 0;
 };
-
-/**
- * return la classe de l'option selon OptionType
- */
-extern Option *instance_option(const nlohmann::json &json);
-
-#endif

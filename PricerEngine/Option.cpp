@@ -1,45 +1,17 @@
 #include "Option.hpp"
 
-#include "string.h"
-#include "ConditionalBasketOption.hpp"
-#include "ConditionalMaxOption.hpp"
-#include <iostream>
-
-using namespace std;
-
-Option::Option()
+Option::Option(double T_, int nbTimeSteps_, int size_, double r_, PnlVect *strikes_, PnlVect *dates_)
 {
+    T = T_;
+    nbTimeSteps = nbTimeSteps_;
+    size = size_;
+    r = r_;
+    strikes = pnl_vect_copy(strikes_);
+    dates = pnl_vect_copy(dates_);
 }
 
-Option::Option(const nlohmann::json &json)
-{
-    json.at("Strikes").get_to(strike);
-    json.at("MathPaymentDates").get_to(paymentDate);
-    json.at("DomesticInterestRate").get_to(intersertRate);
-
-}
 Option::~Option()
 {
-    pnl_vect_free(&strike);
-    pnl_vect_free(&paymentDate);
-}
-
-
-Option *instance_option(const nlohmann::json &json)
-{
-    Option *opt = NULL;
-    string optionType;
-    json.at("PayoffType").get_to(optionType);
-
-    if (optionType == "ConditionalBasket")
-        opt = new ConditionalBasketOption(json);
-    else if (optionType == "ConditionalMax")
-        opt = new ConditionalMaxOption(json);
-    else
-    {
-        cout << "Option " << optionType << " unknow. Abort." << endl;
-        abort();
-    }
-
-    return opt;
+    pnl_vect_free(&strikes);
+    pnl_vect_free(&dates);
 }
