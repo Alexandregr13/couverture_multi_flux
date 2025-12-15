@@ -28,7 +28,7 @@ make -j
 ./pricing_server ../../TestCases/Basket_5_3_1/basket_5_3_1_math_param.json 
 ```
 
-#### Ordinateur Bireet (Linux):
+#### Ordinateur Thomas Linux:
 
 ```bash
 cd ~/Bureau/ENSIMAG/3A/ProjetMultiFlux/couverture_multi_flux/PricerEngine
