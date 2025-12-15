@@ -14,7 +14,7 @@ ConditionalMaxOption::~ConditionalMaxOption()
 
 double ConditionalMaxOption::payoff(const PnlMat *path)
 {
-    // ConditionalMax: P_m = (max S^n_{t_m} - K_m)_+ * 1_{P_{m-1}=0}
+
     // Only pay if the immediately previous payoff was 0
 
     double totalPayoff = 0.0;

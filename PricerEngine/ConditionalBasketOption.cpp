@@ -14,7 +14,7 @@ ConditionalBasketOption::~ConditionalBasketOption()
 
 double ConditionalBasketOption::payoff(const PnlMat *path)
 {
-    // ConditionalBasket: P_m = (1/N * sum(S^n_{t_m}) - K_m)_+ * 1_{P_k=0 for all k<m}
+
     // Once any payoff is positive, stop
 
     double totalPayoff = 0.0;
