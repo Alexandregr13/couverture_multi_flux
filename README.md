@@ -8,6 +8,11 @@
 
   - gRPC : 1.76.0 (depuis ~/Téléchargements/grpc-install)
   - PNL : depuis /home/alexandre/3A/projet-de-couverture-de-produits-derives/pnl-1.15.0/build
+  - 
+  - cmake -DCMAKE_PREFIX_PATH="/path/to/pnl;/path/to/grpc" ..
+  - make
+  - ./pricing_server ~/3A/PCPMF/PCMF/couverture_multi_flux/TestCases/Basket_5_3_1/basket_5_3_1_math_param.json 
+
 
 ## Présentation
 
