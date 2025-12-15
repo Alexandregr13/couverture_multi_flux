@@ -13,6 +13,21 @@
   - make
   - ./pricing_server ~/3A/PCPMF/PCMF/couverture_multi_flux/TestCases/Basket_5_3_1/basket_5_3_1_math_param.json 
 
+#### Ordinateur Jérémie:
+
+```bash
+cd ~/Documents/couverture_multi_flux/PricerEngine
+rm -rf build && mkdir build && cd build
+
+cmake -DCMAKE_BUILD_TYPE=Debug \
+  -DCMAKE_PREFIX_PATH="$HOME/pnl/build;$HOME/deps/grpc-install" \
+  ..
+
+make -j
+
+./pricing_server ../../TestCases/Basket_5_3_1/basket_5_3_1_math_param.json 
+```
+
 
 ## Présentation
 
