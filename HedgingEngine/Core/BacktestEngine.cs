@@ -1,4 +1,5 @@
 using System;
+#nullable disable
 using System.Linq;
 using System.IO;
 using System.Threading.Tasks;
@@ -11,12 +12,13 @@ using HedgingEngine.Portfolio;
 using HedgingEngine.Utilities;
 using HedgingEngine.Services;
 using GrpcPricing.Protos;
+using System.Text.Json;
 
 namespace HedgingEngine.Core
 {
     public class BacktestEngine
     {
-        private GrpcPricerClient? _grpcClient;
+        private GrpcPricerClient _grpcClient;
 
         public async Task RunAsync(string financialParamFile, string marketDataFile, string outputFile)
         {
@@ -29,40 +31,52 @@ namespace HedgingEngine.Core
             
             var portfolio = await RunHedgingAsync(hedgingParams, dataFeeds);
             
-            var outputData = portfolio.History.Select(h => new
+            var outputData = new List<object>();
+            foreach (var h in portfolio.History)
             {
-                OutputDate = h.Date.ToString("yyyy-MM-ddTHH:mm:ss"),
-                PortfolioValue = double.IsNaN(h.PortfolioValue) || double.IsInfinity(h.PortfolioValue) ? 0.0 : h.PortfolioValue,
-                Delta = h.Compositions.Values.Select(v => double.IsNaN(v) || double.IsInfinity(v) ? 0.0 : v).ToArray(),
-                DeltaStdDev = h.DeltaStdDev.Select(v => double.IsNaN(v) || double.IsInfinity(v) ? 0.0 : v).ToArray(),
-                Price = double.IsNaN(h.Price) || double.IsInfinity(h.Price) ? 0.0 : h.Price,
-                PriceStdDev = double.IsNaN(h.PriceStdDev) || double.IsInfinity(h.PriceStdDev) ? 0.0 : h.PriceStdDev
-            }).ToList();
+                outputData.Add(new
+                {
+                    OutputDate = h.Date.ToString("yyyy-MM-ddTHH:mm:ss"),
+                    PortfolioValue = h.PortfolioValue,
+                    Delta = h.Compositions.Values.ToArray(),
+                    DeltaStdDev = h.DeltaStdDev.ToArray(),
+                    Price = h.Price,
+                    PriceStdDev = h.PriceStdDev
+                });
+            }
             
-            File.WriteAllText(outputFile, System.Text.Json.JsonSerializer.Serialize(outputData, new System.Text.Json.JsonSerializerOptions { WriteIndented = true }));
+            var options = new JsonSerializerOptions { WriteIndented = true };
+            File.WriteAllText(outputFile, JsonSerializer.Serialize(outputData, options));
         }
 
         private async Task<Portfolio.Portfolio> RunHedgingAsync(HedgingParams parameters, List<DataFeed> dataFeeds)
         {
             var monitoringPast = new List<List<double>>();
-            Portfolio.Portfolio? portfolio = null;
-            DateTime? previousDate = null;
-            bool optionExpired = false;
+            Portfolio.Portfolio portfolio = null;
+            DateTime previousDate = DateTime.MinValue;
             
             for (int t = 0; t < dataFeeds.Count; t++)
             {
                 var feed = dataFeeds[t];
-                var spots = parameters.UnderlyingIds.Select(id => feed.SpotList[id]).ToList();
+                var spots = new List<double>();
+                foreach(var id in parameters.UnderlyingIds)
+                {
+                    spots.Add(feed.SpotList[id]);
+                }
                 
                 double mathTime = parameters.DateConverter.ConvertToMathDistance(parameters.CreationDate, feed.Date);
                 bool isMonitoringDate = parameters.IsMonitoringDate(feed.Date);
                 
                 if (isMonitoringDate || t == 0)
+                {
                     monitoringPast.Add(spots);
+                }
                 
-                double deltaTime = previousDate.HasValue 
-                    ? parameters.DateConverter.ConvertToMathDistance(previousDate.Value, feed.Date) 
-                    : 0;
+                double deltaTime = 0;
+                if (t > 0)
+                {
+                    deltaTime = parameters.DateConverter.ConvertToMathDistance(previousDate, feed.Date);
+                }
                 
                 bool shouldRebalance = (t % parameters.RebalancingPeriod) == 0;
                 
@@ -70,30 +84,32 @@ namespace HedgingEngine.Core
                 {
                     portfolio = await InitializePortfolioAsync(parameters, monitoringPast, feed, mathTime, isMonitoringDate);
                 }
-                else if (shouldRebalance && !optionExpired)
+                else if (shouldRebalance)
                 {
-                    optionExpired = await RebalancePortfolioAsync(parameters, portfolio!, monitoringPast, feed, mathTime, deltaTime, isMonitoringDate);
+                    await RebalancePortfolioAsync(parameters, portfolio, monitoringPast, feed, mathTime, deltaTime, isMonitoringDate);
                 }
                 else
                 {
-                    double portfolioValue = portfolio!.GetPortfolioValue(feed, deltaTime, parameters.InterestRate);
+                    double portfolioValue = portfolio.GetPortfolioValue(feed, deltaTime, parameters.InterestRate);
                     portfolio.UpdateCompo(portfolio.Compositions, feed, portfolioValue);
                 }
                 
                 previousDate = feed.Date;
             }
             
-            return portfolio!;
+            return portfolio;
         }
 
         private async Task<Portfolio.Portfolio> InitializePortfolioAsync(
             HedgingParams parameters, List<List<double>> past, DataFeed feed, double mathTime, bool isMonitoringDate)
         {
-            var pricingOutput = await _grpcClient!.GetPriceAndDeltasAsync(past, mathTime, isMonitoringDate);
+            var pricingOutput = await _grpcClient.GetPriceAndDeltasAsync(past, mathTime, isMonitoringDate);
             var deltas = VectorMath.ArrayToDict(pricingOutput.Deltas.ToArray(), parameters.UnderlyingIds);
             
             var portfolio = new Portfolio.Portfolio(deltas, feed, pricingOutput.Price);
+            
             var lastState = portfolio.History.Last();
+           // injecter les stats du pricer dans la première ligne de l'historique sans avoir à surcharger le constructeur de la classe Portfolio avec trop de paramètres.
             portfolio.History[portfolio.History.Count - 1] = new Portfolio.PortfolioState(
                 lastState.Date, lastState.Compositions, lastState.Cash, lastState.PortfolioValue,
                 pricingOutput.Price, pricingOutput.PriceStdDev, pricingOutput.DeltasStdDev.ToList()
@@ -101,20 +117,28 @@ namespace HedgingEngine.Core
             return portfolio;
         }
 
-        private async Task<bool> RebalancePortfolioAsync(
+        private async Task RebalancePortfolioAsync(
             HedgingParams parameters, Portfolio.Portfolio portfolio, List<List<double>> past,
             DataFeed feed, double mathTime, double deltaTime, bool isMonitoringDate)
         {
             double portfolioValue = portfolio.GetPortfolioValue(feed, deltaTime, parameters.InterestRate);
-            var pricingOutput = await _grpcClient!.GetPriceAndDeltasAsync(past, mathTime, isMonitoringDate);
             
-            if (double.IsNaN(pricingOutput.Price) || pricingOutput.Price <= 0)
-                return true;
+            var pastToSend = new List<List<double>>(past);
+            if (!isMonitoringDate)
+            {
+                var spots = new List<double>();
+                foreach(var id in parameters.UnderlyingIds)
+                {
+                    spots.Add(feed.SpotList[id]);
+                }
+                pastToSend.Add(spots);
+            }
+
+            var pricingOutput = await _grpcClient.GetPriceAndDeltasAsync(pastToSend, mathTime, isMonitoringDate);
             
             var newDeltas = VectorMath.ArrayToDict(pricingOutput.Deltas.ToArray(), parameters.UnderlyingIds);
             portfolio.UpdateCompo(newDeltas, feed, portfolioValue, 
                                    pricingOutput.Price, pricingOutput.PriceStdDev, pricingOutput.DeltasStdDev.ToList());
-            return false;
         }
     }
 }

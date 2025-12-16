@@ -8,7 +8,7 @@ namespace HedgingEngine
         {
             if (args.Length != 3)
             {
-                Console.WriteLine("Usage: HedgingEngine <financial-params.json> <market-data.csv> <output.json>");
+                Console.WriteLine("Error, invalid syntax. It should be like this: BacktestConsole.exe <test-params> <mkt-data> <output-file>");
                 return 1;
             }
 

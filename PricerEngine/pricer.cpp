@@ -74,12 +74,16 @@ void BlackScholesPricer::priceAndDeltas(const PnlMat *past, double currentDate, 
     double delta_d, payoff, payoff_plus, payoff_minus;
 
     int lastIndex;
+    int shiftIdx; // j'ai rajouté
     if (currentDate == 0.0) {
         lastIndex = 0;
+        shiftIdx = -1;
     } else if (isMonitoringDate) {
         lastIndex = past->m - 1;
+        shiftIdx = lastIndex - 1;
     } else {
         lastIndex = std::max(0, past->m - 2);
+        shiftIdx = lastIndex;
     }
 
     for (int j = 0; j < nSamples; j++)
@@ -91,10 +95,10 @@ void BlackScholesPricer::priceAndDeltas(const PnlMat *past, double currentDate, 
         for (int d = 0; d < nAssets; d++)
         {
             pnl_mat_clone(shiftPath, path);
-            model->shift_asset(d, lastIndex, 1 + fdStep, shiftPath);
+            model->shift_asset(d, shiftIdx, 1 + fdStep, shiftPath);//je passe shiftIdx au lieu de last
             payoff_plus = opt->payoff(shiftPath);
             pnl_mat_clone(shiftPath, path);
-            model->shift_asset(d, lastIndex, 1 - fdStep, shiftPath);
+            model->shift_asset(d, shiftIdx, 1 - fdStep, shiftPath); 
             payoff_minus = opt->payoff(shiftPath);
             delta_d = payoff_plus - payoff_minus;
             pnl_vect_set(deltas, d, pnl_vect_get(deltas, d) + delta_d);
