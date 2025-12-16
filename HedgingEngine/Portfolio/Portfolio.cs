@@ -29,7 +29,7 @@ namespace HedgingEngine.Portfolio
         public List<PortfolioState> History { get; private set; } = new();
 
         /// Initialise le portefeuille a t=0
-        /// C_0 = V_0 - Δ_0 · S_0
+        /// C_0 = V_0 - delta_0 · S_0
         public Portfolio(Dictionary<string, double> dictInit, DataFeed data, double value)
         {
             Compositions = dictInit;
@@ -42,7 +42,7 @@ namespace HedgingEngine.Portfolio
         public void UpdateCompo(Dictionary<string, double> newDeltas, DataFeed feed, double value)
         {
             Compositions = newDeltas;
-            // C_{t_k}^+ = V_{t_k} - Δ_k · S_{t_k}
+            // C_{t_k}^+ = V_{t_k} - delta_k · S_{t_k}
             Cash = value - Utilities.VectorMath.Dot(newDeltas, feed.SpotList);
             Date = feed.Date;
 
@@ -51,7 +51,7 @@ namespace HedgingEngine.Portfolio
 
         public double GetPortfolioValue(DataFeed feed, double time, double r)
         {
-            // Capitalisation du cash: C^- = C^+ * e^(r*Δt)
+            // Capitalisation du cash: C^- = C^+ * e^(r*delta_t)
             double capitalizedCash = Cash * Math.Exp(r * time);
             double value = Utilities.VectorMath.Dot(Compositions, feed.SpotList) + capitalizedCash;
             return value;
