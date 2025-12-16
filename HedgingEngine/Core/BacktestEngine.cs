@@ -148,7 +148,7 @@ namespace HedgingEngine.Core
     {
         private GrpcPricerClient? _grpcClient;
         private const string GrpcServerAddress = "http://localhost:50051";
-        private const bool UseMockPricer = true; // 🔧 Activer le mode mock
+        private const bool UseMockPricer = false; // 🔧 Mode production avec gRPC
 
         public async Task RunAsync(string financialParamFile, string marketDataFile, string outputFile)
         {
@@ -174,13 +174,16 @@ namespace HedgingEngine.Core
             Console.WriteLine($"\n✅ Simulation terminée");
             Console.WriteLine($"✅ Valeur finale du portefeuille: {portfolio.History.Last().PortfolioValue:F6}");
             
-            // Export results
+            // Export results - remplacer les valeurs invalides par 0
             var outputData = portfolio.History.Select(h => new
             {
                 Date = h.Date.ToString("yyyy-MM-dd"),
-                Value = h.PortfolioValue,
-                Cash = h.Cash,
-                Deltas = h.Compositions
+                Value = double.IsNaN(h.PortfolioValue) || double.IsInfinity(h.PortfolioValue) ? 0.0 : h.PortfolioValue,
+                Cash = double.IsNaN(h.Cash) || double.IsInfinity(h.Cash) ? 0.0 : h.Cash,
+                Deltas = h.Compositions.ToDictionary(
+                    kvp => kvp.Key, 
+                    kvp => double.IsNaN(kvp.Value) || double.IsInfinity(kvp.Value) ? 0.0 : kvp.Value
+                )
             }).ToList();
             
             File.WriteAllText(outputFile, System.Text.Json.JsonSerializer.Serialize(outputData, new System.Text.Json.JsonSerializerOptions { WriteIndented = true }));
@@ -189,19 +192,24 @@ namespace HedgingEngine.Core
 
         private async Task<Portfolio.Portfolio> RunHedgingAsync(HedgingParams parameters, List<DataFeed> dataFeeds)
         {
-            var allPast = new List<List<double>>();
+            var monitoringPast = new List<List<double>>();  // Seulement les dates de monitoring
             Portfolio.Portfolio? portfolio = null;
             DateTime? previousDate = null;
+            bool optionExpired = false;  // Indicateur : option a payé, arrêter de rebalancer
             
             for (int t = 0; t < dataFeeds.Count; t++)
             {
                 var feed = dataFeeds[t];
                 var spots = parameters.UnderlyingIds.Select(id => feed.SpotList[id]).ToList();
                 
-                allPast.Add(spots);
-                
                 double mathTime = parameters.DateConverter.ConvertToMathDistance(parameters.CreationDate, feed.Date);
                 bool isMonitoringDate = parameters.IsMonitoringDate(feed.Date);
+                
+                // Ajouter les spots seulement si c'est une date de monitoring
+                if (isMonitoringDate || t == 0)
+                {
+                    monitoringPast.Add(spots);
+                }
                 
                 double deltaTime = 0;
                 if (previousDate.HasValue)
@@ -214,12 +222,39 @@ namespace HedgingEngine.Core
                 if (t == 0)
                 {
                     Console.WriteLine($"[t={t}] Initialisation (monitoring={isMonitoringDate})");
-                    portfolio = await InitializePortfolioAsync(parameters, allPast, feed, mathTime, isMonitoringDate);
+                    portfolio = await InitializePortfolioAsync(parameters, monitoringPast, feed, mathTime, isMonitoringDate);
                 }
-                else if (shouldRebalance)
+                else if (shouldRebalance && !optionExpired)
                 {
                     Console.WriteLine($"[t={t}] Rebalancement (monitoring={isMonitoringDate}, time={mathTime:F6})");
-                    await RebalancePortfolioAsync(parameters, portfolio!, allPast, feed, mathTime, deltaTime, isMonitoringDate);
+                    var rebalanceResult = await RebalancePortfolioAsync(parameters, portfolio!, monitoringPast, feed, mathTime, deltaTime, isMonitoringDate);
+                    
+                    // Si le prix est 0 ou NaN, l'option a expiré/payé
+                    if (rebalanceResult.Price <= 0 || double.IsNaN(rebalanceResult.Price))
+                    {
+                        Console.WriteLine($"⚠️  Option expirée (prix invalide), arrêt des rebalancements");
+                        Console.WriteLine($"💰 Liquidation des positions, capitalisation du cash uniquement");
+                        optionExpired = true;
+                        
+                        // Récupérer la dernière valeur valide du portfolio
+                        var lastValidValue = portfolio!.History
+                            .TakeWhile(h => !double.IsNaN(h.PortfolioValue))
+                            .LastOrDefault()?.PortfolioValue ?? 0;
+                        
+                        // Liquider toutes les positions : convertir en cash
+                        // Si on a une valeur portfolio valide, l'utiliser, sinon calculer
+                        double totalCash = double.IsNaN(portfolio.GetPortfolioValue(feed, deltaTime, parameters.InterestRate))
+                            ? lastValidValue 
+                            : portfolio.GetPortfolioValue(feed, deltaTime, parameters.InterestRate);
+                            
+                        portfolio.UpdateCompo(new Dictionary<string, double>(), feed, totalCash);
+                    }
+                }
+                else if (optionExpired)
+                {
+                    // Capitalisation du cash uniquement, pas de rebalancement
+                    double cashValue = portfolio!.Cash * Math.Exp(parameters.InterestRate * deltaTime);
+                    portfolio.UpdateCompo(new Dictionary<string, double>(), feed, cashValue);
                 }
                 else
                 {
@@ -256,7 +291,7 @@ namespace HedgingEngine.Core
             return new Portfolio.Portfolio(deltas, feed, pricingOutput.Price);
         }
 
-        private async Task RebalancePortfolioAsync(
+        private async Task<PricingOutput> RebalancePortfolioAsync(
             HedgingParams parameters, Portfolio.Portfolio portfolio, List<List<double>> past,
             DataFeed feed, double mathTime, double deltaTime, bool isMonitoringDate)
         {
@@ -279,6 +314,8 @@ namespace HedgingEngine.Core
             Console.WriteLine($"  Nouveau prix: {pricingOutput.Price:F6}");
             
             portfolio.UpdateCompo(newDeltas, feed, portfolioValue);
+            
+            return pricingOutput;  // Retourner le résultat pour vérifier l'expiration
         }
 
         // 🎭 Mock pricer : retourne des valeurs fixes

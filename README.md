@@ -27,6 +27,21 @@ make -j
 ./pricing_server ../../TestCases/Basket_5_3_1/basket_5_3_1_math_param.json 
 ```
 
+#### Ordinateur Thomas (Linux):
+
+```bash
+cd ~/Bureau/ENSIMAG/3A/ProjetMultiFlux/couverture_multi_flux/PricerEngine
+rm -rf build && mkdir build && cd build
+
+cmake -DCMAKE_BUILD_TYPE=Debug \
+  -DCMAKE_PREFIX_PATH="$HOME/Bureau/ENSIMAG/3A/ProjetMultiFlux/pnl-1.15.0/build;$HOME/grpc-install" \
+  ..
+
+make -j4
+
+./pricing_server ../../TestCases/Basket_5_3_1/basket_5_3_1_math_param.json 
+```
+
 
 ## Présentation
 

@@ -22,14 +22,14 @@ namespace HedgingEngine.Services
             Console.WriteLine($"[GrpcPricerClient] Client initialisé pour {serverAddress}");
         }
 
-        public ReqInfo TestConnection()
+        public async Task<ReqInfo> TestConnectionAsync()
         {
             try
             {
                 Console.WriteLine("[GrpcPricerClient] Envoi du Heartbeat...");
                 
                 var request = new Empty();
-                var response = _client.Heartbeat(request);
+                var response = await _client.HeartbeatAsync(request);
                 
                 Console.WriteLine("[GrpcPricerClient] Heartbeat reçu avec succès");
                 Console.WriteLine($"  - Taux domestique: {response.DomesticInterestRate}");
@@ -45,11 +45,16 @@ namespace HedgingEngine.Services
             }
         }
 
-        public PricingOutput GetPriceAndDeltas(List<List<double>> past, double time, bool isMonitoringDate)
+        public ReqInfo TestConnection()
+        {
+            return TestConnectionAsync().GetAwaiter().GetResult();
+        }
+
+        public async Task<PricingOutput> GetPriceAndDeltasAsync(List<List<double>> past, double time, bool isMonitoringDate)
         {
             try
             {
-                Console.WriteLine($"[GrpcPricerClient] Appel PriceAndDeltas (time={time}, monitoring={isMonitoringDate})");
+                Console.WriteLine($"[GrpcPricerClient] Appel PriceAndDeltas (time={time}, monitoring={isMonitoringDate}, past size={past.Count}x{past[0].Count})");
                 
                 var request = new PricingInput
                 {
@@ -64,7 +69,7 @@ namespace HedgingEngine.Services
                     request.Past.Add(pastLine);
                 }
                 
-                var response = _client.PriceAndDeltas(request);
+                var response = await _client.PriceAndDeltasAsync(request);
                 
                 Console.WriteLine($"[GrpcPricerClient] Prix reçu: {response.Price} ± {response.PriceStdDev}");
                 Console.WriteLine($"[GrpcPricerClient] Deltas reçus: [{string.Join(", ", response.Deltas)}]");
@@ -74,8 +79,14 @@ namespace HedgingEngine.Services
             catch (RpcException ex)
             {
                 Console.WriteLine($"[GrpcPricerClient] ERREUR lors de PriceAndDeltas: {ex.Status.Detail}");
+                Console.WriteLine($"[GrpcPricerClient] Détails: StatusCode={ex.StatusCode}, Message={ex.Message}");
                 throw new Exception("Échec du calcul de pricing", ex);
             }
+        }
+
+        public PricingOutput GetPriceAndDeltas(List<List<double>> past, double time, bool isMonitoringDate)
+        {
+            return GetPriceAndDeltasAsync(past, time, isMonitoringDate).GetAwaiter().GetResult();
         }
 
         public void Dispose()
