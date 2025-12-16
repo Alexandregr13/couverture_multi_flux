@@ -4,7 +4,6 @@
 ## Avertissement. Il est strictement interdit de:
 
 - Cloner ce dépôt ou de copier son contenu sur un dépôt public.
-- Transférer le code ou la documentation fournis à un outil d'IA générative pour essayer d'engendrer automatiquement une solution au projet.
 
   - gRPC : 1.76.0 (depuis ~/Téléchargements/grpc-install)
   - PNL : depuis /home/alexandre/3A/projet-de-couverture-de-produits-derives/pnl-1.15.0/build
@@ -12,6 +11,36 @@
   - cmake -DCMAKE_PREFIX_PATH="/path/to/pnl;/path/to/grpc" ..
   - make
   - ./pricing_server ~/3A/PCPMF/PCMF/couverture_multi_flux/TestCases/Basket_5_3_1/basket_5_3_1_math_param.json 
+
+#### Ordinateur Jérémie:
+
+```bash
+cd ~/Documents/couverture_multi_flux/PricerEngine
+rm -rf build && mkdir build && cd build
+
+cmake -DCMAKE_BUILD_TYPE=Debug \
+  -DCMAKE_PREFIX_PATH="$HOME/pnl/build;$HOME/deps/grpc-install" \
+  ..
+
+make -j
+
+./pricing_server ../../TestCases/Basket_5_3_1/basket_5_3_1_math_param.json 
+```
+
+#### Ordinateur Thomas (Linux):
+
+```bash
+cd ~/Bureau/ENSIMAG/3A/ProjetMultiFlux/couverture_multi_flux/PricerEngine
+rm -rf build && mkdir build && cd build
+
+cmake -DCMAKE_BUILD_TYPE=Debug \
+  -DCMAKE_PREFIX_PATH="$HOME/Bureau/ENSIMAG/3A/ProjetMultiFlux/pnl-1.15.0/build;$HOME/grpc-install" \
+  ..
+
+make -j4
+
+./pricing_server ../../TestCases/Basket_5_3_1/basket_5_3_1_math_param.json 
+```
 
 
 ## Présentation

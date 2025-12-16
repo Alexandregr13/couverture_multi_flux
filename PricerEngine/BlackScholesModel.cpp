@@ -83,5 +83,10 @@ void BlackScholesModel::shift_asset(int d, int lastIndex, double h, PnlMat *path
     for (int i = lastIndex + 1; i < path->m; i++)
     {
         MLET(path, i, d) *= h;
+<<<<<<< HEAD
     }
 }
+=======
+    };
+}
+>>>>>>> 4ea4dc74320076b13906e1224d78ea43607e81a4

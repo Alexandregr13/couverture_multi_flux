@@ -1,13 +1,18 @@
+<<<<<<< HEAD
 using Grpc.Net.Client;
 using GrpcPricing.Protos;
 using MarketData;
 using ParameterInfo.JsonUtils;
 using ParameterInfo;
+=======
+using HedgingEngine.Core;
+>>>>>>> 4ea4dc74320076b13906e1224d78ea43607e81a4
 
 namespace HedgingEngine
 {
     class Program
     {
+<<<<<<< HEAD
         static void Main(string[] args)
         {
             // Verification des arguments
@@ -45,3 +50,19 @@ namespace HedgingEngine
         }
     }
 }
+=======
+        static async Task<int> Main(string[] args)
+        {
+            if (args.Length != 3)
+            {
+                Console.WriteLine("Error, invalid syntax. It should be like this: BacktestConsole.exe <test-params> <mkt-data> <output-file>");
+                return 1;
+            }
+
+            var backtest = new BacktestEngine();
+            await backtest.RunAsync(args[0], args[1], args[2]);
+            return 0;
+        }
+    }
+}
+>>>>>>> 4ea4dc74320076b13906e1224d78ea43607e81a4
