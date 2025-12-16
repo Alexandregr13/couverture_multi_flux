@@ -57,7 +57,7 @@ public:
         if (past == NULL) {
             return Status(grpc::StatusCode::INVALID_ARGUMENT, "Cannot read past");
         }
-        // pnl_mat_print(past); // Debugging only - commented for production
+        pnl_mat_print(past); 
         pricer.priceAndDeltas(past, currentDate, isMonitoringDate, price, priceStdDev, delta, deltaStdDev);
         output->set_price(price);
         output->set_pricestddev(priceStdDev);

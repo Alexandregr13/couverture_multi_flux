@@ -1,5 +1,4 @@
 using MarketData;
-using TimeHandler;
 
 namespace HedgingEngine.Portfolio
 {
@@ -9,58 +8,56 @@ namespace HedgingEngine.Portfolio
         public Dictionary<string, double> Compositions { get; init; }
         public double Cash { get; init; }
         public double PortfolioValue { get; init; }
+        public double Price { get; init; }
+        public double PriceStdDev { get; init; }
+        public List<double> DeltaStdDev { get; init; }
 
-        public PortfolioState(DateTime date, Dictionary<string, double> compositions, double cash, double portfolioValue)
+        public PortfolioState(DateTime date, Dictionary<string, double> compositions, double cash, double portfolioValue, 
+                              double price = 0.0, double priceStdDev = 0.0, List<double>? deltaStdDev = null)
         {
             Date = date;
             Compositions = new Dictionary<string, double>(compositions);
             Cash = cash;
             PortfolioValue = portfolioValue;
+            Price = price;
+            PriceStdDev = priceStdDev;
+            DeltaStdDev = deltaStdDev ?? new List<double>();
         }
     }
-
 
     public class Portfolio
     {
         public Dictionary<string, double> Compositions { get; private set; }
         public double Cash { get; private set; } = 0;
         public DateTime Date { get; private set; }
-
         public List<PortfolioState> History { get; private set; } = new();
 
-        /// Initialise le portefeuille a t=0
-        /// C_0 = V_0 - delta_0 · S_0
         public Portfolio(Dictionary<string, double> dictInit, DataFeed data, double value)
         {
             Compositions = dictInit;
             Cash = value - Utilities.VectorMath.Dot(dictInit, data.SpotList);
             Date = data.Date;
-
-            RecordState(value);
+            RecordState(value, 0.0, 0.0, null);
         }
 
-        public void UpdateCompo(Dictionary<string, double> newDeltas, DataFeed feed, double value)
+        public void UpdateCompo(Dictionary<string, double> newDeltas, DataFeed feed, double value, 
+                                 double price = 0.0, double priceStdDev = 0.0, List<double>? deltaStdDev = null)
         {
             Compositions = newDeltas;
-            // C_{t_k}^+ = V_{t_k} - delta_k · S_{t_k}
             Cash = value - Utilities.VectorMath.Dot(newDeltas, feed.SpotList);
             Date = feed.Date;
-
-            RecordState(value);
+            RecordState(value, price, priceStdDev, deltaStdDev);
         }
 
-        public double GetPortfolioValue(DataFeed feed, double time, double r)
+        public double GetPortfolioValue(DataFeed data, double deltaTime, double interestRate)
         {
-            // Capitalisation du cash: C^- = C^+ * e^(r*delta_t)
-            double capitalizedCash = Cash * Math.Exp(r * time);
-            double value = Utilities.VectorMath.Dot(Compositions, feed.SpotList) + capitalizedCash;
-            return value;
+            double capitalizedCash = Cash * Math.Exp(interestRate * deltaTime);
+            return Utilities.VectorMath.Dot(Compositions, data.SpotList) + capitalizedCash;
         }
 
-        private void RecordState(double portfolioValue)
+        private void RecordState(double portfolioValue, double price = 0.0, double priceStdDev = 0.0, List<double>? deltaStdDev = null)
         {
-            History.Add(new PortfolioState(Date, Compositions, Cash, portfolioValue));
+            History.Add(new PortfolioState(Date, Compositions, Cash, portfolioValue, price, priceStdDev, deltaStdDev));
         }
     }
 }
-

@@ -7,7 +7,6 @@ namespace HedgingEngine.Models
 {
     public class HedgingParams
     {
-        public TestParameters TestParams { get; }
         public string[] UnderlyingIds { get; }
         public DateTime[] PaymentDates { get; }
         public double InterestRate { get; }
@@ -17,37 +16,12 @@ namespace HedgingEngine.Models
 
         public HedgingParams(TestParameters testParams)
         {
-            TestParams = testParams;
-            
-            // Extraire et trier les IDs des sous-jacents
-            UnderlyingIds = testParams.AssetDescription.UnderlyingCurrencyCorrespondence.Keys
-                .OrderBy(k => k)
-                .ToArray();
-            
-            // Extraire les dates de paiement selon le type de payoff
-            PaymentDates = testParams.PayoffDescription switch
-            {
-                ConditionalBasketPayoffDescription cb => cb.PaymentDates,
-                ConditionalMaxPayoffDescription cm => cm.PaymentDates,
-                _ => throw new NotSupportedException($"Unknown payoff type: {testParams.PayoffDescription.GetType().Name}")
-            };
-
-            // Extraire le taux d'intérêt domestique
-            InterestRate = testParams.AssetDescription.CurrencyRates[
-                testParams.AssetDescription.DomesticCurrencyId];
-
-            // Stocker la date de création
+            UnderlyingIds = testParams.AssetDescription.UnderlyingCurrencyCorrespondence.Keys.OrderBy(k => k).ToArray();
+            PaymentDates = testParams.PayoffDescription.PaymentDates;
+            InterestRate = testParams.AssetDescription.CurrencyRates[testParams.AssetDescription.DomesticCurrencyId];
             CreationDate = testParams.PayoffDescription.CreationDate;
-
-            // Créer le convertisseur de dates mathématiques
             DateConverter = new MathDateConverter(testParams.NumberOfDaysInOneYear);
-
-            // Extraire la période de rebalancement
-            RebalancingPeriod = testParams.RebalancingOracleDescription switch
-            {
-                FixedTimesOracleDescription fixedOracle => fixedOracle.Period,
-                _ => throw new NotSupportedException($"Unknown oracle type: {testParams.RebalancingOracleDescription.GetType().Name}")
-            };
+            RebalancingPeriod = ((FixedTimesOracleDescription)testParams.RebalancingOracleDescription).Period;
         }
 
         public bool IsMonitoringDate(DateTime date)
