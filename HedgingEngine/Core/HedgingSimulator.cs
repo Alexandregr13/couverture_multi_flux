@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using MarketData;
 using HedgingEngine.Models;
@@ -23,32 +24,28 @@ namespace HedgingEngine.Core
             Portfolio.Portfolio? portfolio = null;
             DateTime previousDate = DateTime.MinValue;
 
-            for (int t = 0; t < dataFeeds.Count; t++)
+            for (int stepIndex = 0; stepIndex < dataFeeds.Count; stepIndex++)
             {
-                var feed = dataFeeds[t];
-                var spots = new List<double>();
-                foreach (var id in parameters.UnderlyingIds)
-                {
-                    spots.Add(feed.SpotList[id]);
-                }
+                var feed = dataFeeds[stepIndex];
+                var spots = GetCurrentSpots(parameters, feed);
 
                 double mathTime = parameters.DateConverter.ConvertToMathDistance(parameters.CreationDate, feed.Date);
                 bool isMonitoringDate = parameters.IsMonitoringDate(feed.Date);
 
-                if (isMonitoringDate || t == 0)
+                if (isMonitoringDate || stepIndex == 0)
                 {
                     monitoringPast.Add(spots);
                 }
 
                 double deltaTime = 0;
-                if (t > 0)
+                if (stepIndex > 0)
                 {
                     deltaTime = parameters.DateConverter.ConvertToMathDistance(previousDate, feed.Date);
                 }
 
-                bool shouldRebalance = (t % parameters.RebalancingPeriod) == 0;
+                bool shouldRebalance = (stepIndex % parameters.RebalancingPeriod) == 0;
 
-                if (t == 0)
+                if (stepIndex == 0)
                 {
                     portfolio = await InitializePortfolioAsync(parameters, monitoringPast, feed, mathTime, isMonitoringDate);
                     previousDate = feed.Date;
@@ -69,14 +66,13 @@ namespace HedgingEngine.Core
             var pricingOutput = await _grpcClient.GetPriceAndDeltasAsync(past, mathTime, isMonitoringDate);
             var deltas = VectorMath.ArrayToDict(pricingOutput.Deltas.ToArray(), parameters.UnderlyingIds);
 
-            var portfolio = new Portfolio.Portfolio(deltas, feed, pricingOutput.Price);
-
-            var lastState = portfolio.History.Last();
-            portfolio.History[portfolio.History.Count - 1] = new Portfolio.PortfolioState(
-                lastState.Date, lastState.Compositions, lastState.Cash, lastState.PortfolioValue,
-                pricingOutput.Price, pricingOutput.PriceStdDev, pricingOutput.DeltasStdDev.ToList()
+            return new Portfolio.Portfolio(
+                deltas,
+                feed,
+                pricingOutput.Price,
+                pricingOutput.PriceStdDev,
+                pricingOutput.DeltasStdDev.ToList()
             );
-            return portfolio;
         }
 
         private async Task RebalancePortfolioAsync(
@@ -88,12 +84,7 @@ namespace HedgingEngine.Core
             var pastToSend = new List<List<double>>(past);
             if (!isMonitoringDate)
             {
-                var spots = new List<double>();
-                foreach (var id in parameters.UnderlyingIds)
-                {
-                    spots.Add(feed.SpotList[id]);
-                }
-                pastToSend.Add(spots);
+                pastToSend.Add(GetCurrentSpots(parameters, feed));
             }
 
             var pricingOutput = await _grpcClient.GetPriceAndDeltasAsync(pastToSend, mathTime, isMonitoringDate);
@@ -101,6 +92,11 @@ namespace HedgingEngine.Core
             var newDeltas = VectorMath.ArrayToDict(pricingOutput.Deltas.ToArray(), parameters.UnderlyingIds);
             portfolio.UpdateCompo(newDeltas, feed, portfolioValue,
                                    pricingOutput.Price, pricingOutput.PriceStdDev, pricingOutput.DeltasStdDev.ToList());
+        }
+
+        private List<double> GetCurrentSpots(HedgingParams parameters, DataFeed feed)
+        {
+            return parameters.UnderlyingIds.Select(id => feed.SpotList[id]).ToList();
         }
     }
 }
