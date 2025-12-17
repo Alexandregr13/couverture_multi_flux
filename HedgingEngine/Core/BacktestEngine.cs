@@ -83,18 +83,13 @@ namespace HedgingEngine.Core
                 if (t == 0)
                 {
                     portfolio = await InitializePortfolioAsync(parameters, monitoringPast, feed, mathTime, isMonitoringDate);
+                    previousDate = feed.Date;
                 }
                 else if (shouldRebalance)
                 {
                     await RebalancePortfolioAsync(parameters, portfolio, monitoringPast, feed, mathTime, deltaTime, isMonitoringDate);
+                    previousDate = feed.Date;
                 }
-                else
-                {
-                    double portfolioValue = portfolio.GetPortfolioValue(feed, deltaTime, parameters.InterestRate);
-                    portfolio.UpdateCompo(portfolio.Compositions, feed, portfolioValue);
-                }
-                
-                previousDate = feed.Date;
             }
             
             return portfolio;
