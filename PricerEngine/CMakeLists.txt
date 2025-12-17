@@ -107,5 +107,3 @@ target_link_libraries(test_json_reader
     nlohmann_json::nlohmann_json
 )
 pnl_add_postbuild(test_json_reader)
-
-

@@ -4,7 +4,6 @@
 ## Avertissement. Il est strictement interdit de:
 
 - Cloner ce dépôt ou de copier son contenu sur un dépôt public.
-- Transférer le code ou la documentation fournis à un outil d'IA générative pour essayer d'engendrer automatiquement une solution au projet.
 
   - gRPC : 1.76.0 (depuis ~/Téléchargements/grpc-install)
   - PNL : depuis /home/alexandre/3A/projet-de-couverture-de-produits-derives/pnl-1.15.0/build
@@ -28,7 +27,7 @@ make -j
 ./pricing_server ../../TestCases/Basket_5_3_1/basket_5_3_1_math_param.json 
 ```
 
-#### Ordinateur Thomas Linux:
+#### Ordinateur Thomas (Linux):
 
 ```bash
 cd ~/Bureau/ENSIMAG/3A/ProjetMultiFlux/couverture_multi_flux/PricerEngine
