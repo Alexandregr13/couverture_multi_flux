@@ -29,7 +29,7 @@ BlackScholesPricer::BlackScholesPricer(nlohmann::json &jsonParams) {
     int nbTimeSteps = paymentDates->size;
     double T = pnl_vect_get(paymentDates, nbTimeSteps - 1);
 
-    // Création du modèle 
+    // Création du modèle
     model = new BlackScholesModel(nAssets, interestRate, volatility);
 
     // Création de l'option
@@ -41,7 +41,7 @@ BlackScholesPricer::BlackScholesPricer(nlohmann::json &jsonParams) {
 
     // Générateur aléatoire avec seed pour comparer nos résultats
     rng = pnl_rng_create(PNL_RNG_MERSENNE);
-    pnl_rng_sseed(rng, 42);
+    pnl_rng_sseed(rng, time(NULL));
 
     // Libération des données temporaires (copiées dans model et opt)
     pnl_mat_free(&volatility);
@@ -69,9 +69,7 @@ void BlackScholesPricer::print() {
     pnl_vect_print_asrow(opt->dates);
 }
 
-void BlackScholesPricer::priceAndDeltas(const PnlMat *past, double currentDate, bool isMonitoringDate,
-                                         double &price, double &priceStdDev,
-                                         PnlVect *&deltas, PnlVect *&deltasStdDev) {
+void BlackScholesPricer::priceAndDeltas(const PnlMat *past, double currentDate, bool isMonitoringDate, double &price, double &priceStdDev, PnlVect *&deltas, PnlVect *&deltasStdDev) {
     // Récupération des paramètres depuis model et opt
     int nAssets = model->nAssets;
     double r = model->interestRate;
@@ -136,7 +134,7 @@ void BlackScholesPricer::priceAndDeltas(const PnlMat *past, double currentDate, 
     price = exprT_t * esp;
     priceStdDev = sqrt(fabs((exprT_t * exprT_t * esp2 - price * price) / nSamples));
 
-    // Calcul des deltas 
+    // Calcul des deltas
     double espDelta = exprT_t / (2 * fdStep * nSamples);
     double esp2Delta = espDelta * espDelta * nSamples;
     double st, fact;
