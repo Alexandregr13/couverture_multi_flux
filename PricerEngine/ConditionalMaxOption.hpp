@@ -5,8 +5,8 @@
 class ConditionalMaxOption : public Option
 {
 public:
-    ConditionalMaxOption(double T_, int nbTimeSteps_, int size_, double r_,
+    ConditionalMaxOption(double T_, int nbTimeSteps_, int size_,
                          PnlVect *strikes_, PnlVect *dates_);
     ~ConditionalMaxOption();
-    double payoff(const PnlMat *path) override;
+    double payoff(const PnlMat *path, CapitalizationFunc capitalize) override;
 };
