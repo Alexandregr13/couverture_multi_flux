@@ -4,6 +4,7 @@
 #include <algorithm>
 #include "json_reader.hpp"
 #include "pricer.hpp"
+#include "Capitalization.hpp"
 #include "ConditionalBasketOption.hpp"
 #include "ConditionalMaxOption.hpp"
 
@@ -26,9 +27,9 @@ BlackScholesPricer::BlackScholesPricer(nlohmann::json &jsonParams) {
 
     // Create the appropriate option type based on PayoffType
     if (payoffType == "ConditionalMax") {
-        opt = new ConditionalMaxOption(T, nbTimeSteps, nAssets, interestRate, strikes, paymentDates);
+        opt = new ConditionalMaxOption(T, nbTimeSteps, nAssets, strikes, paymentDates);
     } else {
-        opt = new ConditionalBasketOption(T, nbTimeSteps, nAssets, interestRate, strikes, paymentDates);
+        opt = new ConditionalBasketOption(T, nbTimeSteps, nAssets, strikes, paymentDates);
     }
 
     model = new BlackScholesModel(jsonParams);
@@ -69,7 +70,7 @@ void BlackScholesPricer::priceAndDeltas(const PnlMat *past, double currentDate, 
     double delta_d, payoff, payoff_plus, payoff_minus;
 
     int lastIndex;
-    int shiftIdx; // j'ai rajouté
+    int shiftIdx;
     if (currentDate == 0.0) {
         lastIndex = 0;
         shiftIdx = -1;
@@ -81,18 +82,21 @@ void BlackScholesPricer::priceAndDeltas(const PnlMat *past, double currentDate, 
         shiftIdx = lastIndex;
     }
 
+    // Fonction de capitalisation : capitalise un flux de t_m vers T
+    auto capitalize = createCapitalization(interestRate, T);
+
     for (int j = 0; j < nSamples; j++) {
         model->asset(past, currentDate, lastIndex, path, rng);
-        payoff = opt->payoff(path);
+        payoff = opt->payoff(path, capitalize);
         esp += payoff;
         esp2 += payoff * payoff;
         for (int d = 0; d < nAssets; d++) {
             pnl_mat_clone(shiftPath, path);
-            model->shift_asset(d, shiftIdx, 1 + fdStep, shiftPath); // je passe shiftIdx au lieu de last
-            payoff_plus = opt->payoff(shiftPath);
+            model->shift_asset(d, shiftIdx, 1 + fdStep, shiftPath);
+            payoff_plus = opt->payoff(shiftPath, capitalize);
             pnl_mat_clone(shiftPath, path);
             model->shift_asset(d, shiftIdx, 1 - fdStep, shiftPath);
-            payoff_minus = opt->payoff(shiftPath);
+            payoff_minus = opt->payoff(shiftPath, capitalize);
             delta_d = payoff_plus - payoff_minus;
             pnl_vect_set(deltas, d, pnl_vect_get(deltas, d) + delta_d);
             pnl_vect_set(deltasStdDev, d, pnl_vect_get(deltasStdDev, d) + delta_d * delta_d);
