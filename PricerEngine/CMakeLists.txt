@@ -77,6 +77,11 @@ find_package(nlohmann_json REQUIRED)
 # Include generated *.pb.h files
 include_directories("${CMAKE_CURRENT_BINARY_DIR}")
 
+# Pnl library
+include_directories("D:/Maxime_ENSIMAG/Cours/S9/Couverture_multi_flux/pnl-win64-1.15.0/include")
+link_directories("D:/Maxime_ENSIMAG/Cours/S9/Couverture_multi_flux/pnl-win64-1.15.0/lib")
+
+
 # pricer_grpc_proto
 add_library(pricer_grpc_proto
     ${pricer_grpc_srcs}
@@ -103,9 +108,20 @@ pnl_add_postbuild(pricing_server)
 
 add_executable(test_json_reader json_reader.cpp test_json_reader.cpp)
 target_link_libraries(test_json_reader
-    ${PNL_LIBRARIES}
+    libpnl
     nlohmann_json::nlohmann_json
+    protobuf::libprotobuf
 )
 pnl_add_postbuild(test_json_reader)
 
-
+add_executable(test_pricing test_pricing.cpp pricer.cpp json_reader.cpp BlackScholesModel.cpp Option.cpp ConditionalBasketOption.cpp ConditionalMaxOption.cpp)
+target_link_libraries(test_pricing
+    libpnl
+    pricer_grpc_proto
+    ${_REFLECTION}
+    ${_GRPC_GRPCPP}
+    ${_PROTOBUF_LIBPROTOBUF}
+    ${PNL_LIBRARIES}
+    nlohmann_json::nlohmann_json
+)
+pnl_add_postbuild(test_pricing)

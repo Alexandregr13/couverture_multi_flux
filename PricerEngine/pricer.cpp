@@ -59,20 +59,19 @@ void BlackScholesPricer::print()
 }
 
 void BlackScholesPricer::priceAndDeltas(const PnlMat *past, double currentDate, bool isMonitoringDate,
-                                         double &price, double &priceStdDev,
-                                         PnlVect* &deltas, PnlVect* &deltasStdDev)
+                                        double &price, double &priceStdDev,
+                                        PnlVect* &deltas, PnlVect* &deltasStdDev)
 {
-    price = 0.;
-    priceStdDev = 0.;
+    price = 0.0;
+    priceStdDev = 0.0;
     deltas = pnl_vect_create_from_zero(nAssets);
     deltasStdDev = pnl_vect_create_from_zero(nAssets);
-    double esp = 0, esp2 = 0;
 
-    PnlMat *path = pnl_mat_create(opt->nbTimeSteps + 1, nAssets);
+    // Matrices de travail
+    PnlMat *path      = pnl_mat_create(opt->nbTimeSteps + 1, nAssets);
     PnlMat *shiftPath = pnl_mat_create(opt->nbTimeSteps + 1, nAssets);
 
-    double delta_d, payoff, payoff_plus, payoff_minus;
-
+    // --- Choix lastIndex (je conserve ta logique, même si elle est discutable) ---
     int lastIndex;
     if (currentDate == 0.0) {
         lastIndex = 0;
@@ -82,44 +81,112 @@ void BlackScholesPricer::priceAndDeltas(const PnlMat *past, double currentDate, 
         lastIndex = std::max(0, past->m - 2);
     }
 
-    for (int j = 0; j < nSamples; j++)
-    {
-        model->asset(past, currentDate, lastIndex, path, rng);
-        payoff = opt->payoff(path);
-        esp += payoff;
-        esp2 += payoff * payoff;
-        for (int d = 0; d < nAssets; d++)
-        {
-            pnl_mat_clone(shiftPath, path);
-            model->shift_asset(d, lastIndex, 1 + fdStep, shiftPath);
-            payoff_plus = opt->payoff(shiftPath);
-            pnl_mat_clone(shiftPath, path);
-            model->shift_asset(d, lastIndex, 1 - fdStep, shiftPath);
-            payoff_minus = opt->payoff(shiftPath);
-            delta_d = payoff_plus - payoff_minus;
-            pnl_vect_set(deltas, d, pnl_vect_get(deltas, d) + delta_d);
-            pnl_vect_set(deltasStdDev, d, pnl_vect_get(deltasStdDev, d) + delta_d * delta_d);
+    // --- Si produit déjà payé/éteint selon l'historique, continuation = 0 ---
+    double alreadyAmount = 0.0;
+    int alreadyPayIndex = -1;
+    if (opt->alreadyPaidFromPast(past, lastIndex, isMonitoringDate, alreadyAmount, alreadyPayIndex)) {
+        price = 0.0;
+        priceStdDev = 0.0;
+        pnl_vect_set_zero(deltas);
+        pnl_vect_set_zero(deltasStdDev);
+        pnl_mat_free(&path);
+        pnl_mat_free(&shiftPath);
+        return;
+    }
+
+    // Accumulateurs prix
+    double sumV  = 0.0;
+    double sumV2 = 0.0;
+
+    // Accumulateurs deltas (pour stddev MC)
+    std::vector<double> sumDelta(nAssets, 0.0);
+    std::vector<double> sumDelta2(nAssets, 0.0);
+
+    // Spot "courant" utilisé pour normaliser la FD relative
+    // IMPORTANT : doit correspondre au point que shift_asset() modifie.
+    std::vector<double> spot0(nAssets, 0.0);
+    for (int d = 0; d < nAssets; ++d) {
+        spot0[d] = pnl_mat_get(past, past->m - 1, d);
+        if (spot0[d] <= 0.0) {
+            // FD relative impossible si spot <= 0
+            pnl_mat_free(&path);
+            pnl_mat_free(&shiftPath);
+            throw std::runtime_error("Spot must be > 0 for relative finite differences.");
         }
     }
-    double exprT_t = exp(-interestRate * (T - currentDate));
 
-    esp /= nSamples;
-    esp2 /= nSamples;
-    price = exprT_t * esp;
-    priceStdDev = sqrt(fabs((exprT_t * exprT_t * esp2 - price * price) / nSamples));
+    for (int j = 0; j < nSamples; ++j) {
 
-    double espDelta = exprT_t / (2 * fdStep * nSamples);
-    double esp2Delta = espDelta * espDelta * nSamples;
-    double st, fact;
-    for (int d = 0; d < opt->size; d++)
-    {
-        st = pnl_mat_get(past, past->m - 1, d);
-        delta_d = pnl_vect_get(deltas, d);
-        pnl_vect_set(deltas, d, delta_d * espDelta / st);
-        double tmp = delta_d / (2 * fdStep * nSamples * st);
-        fact = pnl_vect_get(deltasStdDev, d) * (esp2Delta / (st * st)) - tmp * tmp;
-        pnl_vect_set(deltasStdDev, d, sqrt(fabs(fact) / nSamples));
+        // Simule un chemin conditionnel à partir de past/currentDate
+        model->asset(past, currentDate, lastIndex, path, rng);
+
+        // --- Prix : cashflow + date de paiement -> discount vers currentDate ---
+        double amount = 0.0;
+        int payIndex = -1;
+        opt->payoffAndPayIndex(path, amount, payIndex);
+
+        double V = 0.0;
+        if (payIndex >= 0) {
+            const double tpay = pnl_vect_get(paymentDates, payIndex);
+            V = amount * std::exp(-interestRate * (tpay - currentDate));
+        }
+
+        sumV  += V;
+        sumV2 += V * V;
+
+        // --- Deltas : FD relative, mais avec discount dépendant de la date de paiement ---
+        for (int d = 0; d < nAssets; ++d) {
+
+            // + shift
+            pnl_mat_clone(shiftPath, path);
+            model->shift_asset(d, lastIndex, 1.0 + fdStep, shiftPath);
+
+            double aP = 0.0;
+            int idxP = -1;
+            opt->payoffAndPayIndex(shiftPath, aP, idxP);
+
+            double VP = 0.0;
+            if (idxP >= 0) {
+                const double tpayP = pnl_vect_get(paymentDates, idxP);
+                VP = aP * std::exp(-interestRate * (tpayP - currentDate));
+            }
+
+            // - shift
+            pnl_mat_clone(shiftPath, path);
+            model->shift_asset(d, lastIndex, 1.0 - fdStep, shiftPath);
+
+            double aM = 0.0;
+            int idxM = -1;
+            opt->payoffAndPayIndex(shiftPath, aM, idxM);
+
+            double VM = 0.0;
+            if (idxM >= 0) {
+                const double tpayM = pnl_vect_get(paymentDates, idxM);
+                VM = aM * std::exp(-interestRate * (tpayM - currentDate));
+            }
+
+            // dérivée relative: dV/dS ≈ (V+ - V-) / (2*h*S)
+            const double deriv = (VP - VM) / (2.0 * fdStep * spot0[d]);
+
+            sumDelta[d]  += deriv;
+            sumDelta2[d] += deriv * deriv;
+        }
     }
+
+    // --- Final : prix et stddev MC (erreur sur la moyenne) ---
+    price = sumV / nSamples;
+    const double EV2 = sumV2 / nSamples;
+    priceStdDev = std::sqrt(std::fabs(EV2 - price * price) / nSamples);
+
+    // --- Final : deltas et stddev MC ---
+    for (int d = 0; d < nAssets; ++d) {
+        const double delta = sumDelta[d] / nSamples;
+        const double E2    = sumDelta2[d] / nSamples;
+        pnl_vect_set(deltas, d, delta);
+        pnl_vect_set(deltasStdDev, d, std::sqrt(std::fabs(E2 - delta * delta) / nSamples));
+    }
+
     pnl_mat_free(&path);
     pnl_mat_free(&shiftPath);
 }
+

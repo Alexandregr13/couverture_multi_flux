@@ -12,34 +12,91 @@ ConditionalMaxOption::~ConditionalMaxOption()
 {
 }
 
-double ConditionalMaxOption::payoff(const PnlMat *path)
+// double ConditionalMaxOption::payoff(const PnlMat *path)
+// {
+
+//     // Only pay if the immediately previous payoff was 0
+
+//     double totalPayoff = 0.0;
+//     double prevPayoff = 0.0;
+
+//     for (int m = 0; m < nbTimeSteps; m++)
+//     {
+//         double K = pnl_vect_get(strikes, m);
+
+//         double maxVal = pnl_mat_get(path, m + 1, 0);
+//         for (int n = 1; n < size; n++)
+//         {
+//             maxVal = std::max(maxVal, pnl_mat_get(path, m + 1, n));
+//         }
+
+//         double currentPayoff = 0.0;
+//         if (prevPayoff == 0.0)
+//         {
+//             currentPayoff = std::max(maxVal - K, 0.0);
+//         }
+
+//         totalPayoff += currentPayoff;
+//         prevPayoff = currentPayoff;
+//     }
+
+//     return totalPayoff;
+// }
+
+void ConditionalMaxOption::payoffAndPayIndex(const PnlMat* path, double& amount, int& payIndex) const
 {
+    amount = 0.0;
+    payIndex = -1;
 
-    // Only pay if the immediately previous payoff was 0
-
-    double totalPayoff = 0.0;
-    double prevPayoff = 0.0;
-
-    for (int m = 0; m < nbTimeSteps; m++)
-    {
-        double discount = exp(r * (T - pnl_vect_get(dates, m)));
-        double K = pnl_vect_get(strikes, m);
-
-        double maxVal = pnl_mat_get(path, m + 1, 0);
-        for (int n = 1; n < size; n++)
-        {
-            maxVal = std::max(maxVal, pnl_mat_get(path, m + 1, n));
+    double prev = 0.0;
+    for (int m = 0; m < dates->size; ++m) {
+        double maxVal = -1e300;
+        for (int d = 0; d < size; ++d) {
+            maxVal = std::max(maxVal, MGET(path, m + 1, d));
         }
 
-        double currentPayoff = 0.0;
-        if (prevPayoff == 0.0)
-        {
-            currentPayoff = discount * std::max(maxVal - K, 0.0);
-        }
+        const double K = pnl_vect_get(strikes, m);
+        const double cf = std::max(maxVal - K, 0.0);
 
-        totalPayoff += currentPayoff;
-        prevPayoff = currentPayoff;
+        if (prev <= 0.0 && cf > 0.0) {
+            amount = cf;
+            payIndex = m;
+            return;
+        }
+        prev = cf;
     }
+}
 
-    return totalPayoff;
+bool ConditionalMaxOption::alreadyPaidFromPast(const PnlMat* past,
+                                               int lastIndex,
+                                               bool isMonitoringDate,
+                                               double& amount,
+                                               int& payIndex) const
+{
+    amount = 0.0;
+    payIndex = -1;
+
+    const int maxM = std::min(lastIndex, dates->size - 1);
+    if (maxM < 0) return false;
+
+    double prev = 0.0;
+    for (int m = 0; m <= maxM; ++m) {
+        if (!isMonitoringDate && m == lastIndex) break;
+
+        double maxVal = -1e300;
+        for (int d = 0; d < size; ++d) {
+            maxVal = std::max(maxVal, MGET(past, m + 1, d));
+        }
+
+        const double K = pnl_vect_get(strikes, m);
+        const double cf = std::max(maxVal - K, 0.0);
+
+        if (prev <= 0.0 && cf > 0.0) {
+            amount = cf;
+            payIndex = m;
+            return true;
+        }
+        prev = cf;
+    }
+    return false;
 }
