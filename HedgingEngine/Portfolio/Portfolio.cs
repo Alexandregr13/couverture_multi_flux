@@ -10,7 +10,7 @@ namespace HedgingEngine.Portfolio
         double PortfolioValue,
         double Price,
         double PriceStdDev,
-        List<double> DeltaStdDev
+        List<double>? DeltaStdDev
     );
 
     public class Portfolio
@@ -29,7 +29,7 @@ namespace HedgingEngine.Portfolio
         }
 
         public void UpdateCompo(Dictionary<string, double> newDeltas, DataFeed feed, double value, 
-                                 double price = 0, double priceStdDev = 0, List<double> deltaStdDev = null)
+                                 double price = 0, double priceStdDev = 0, List<double>? deltaStdDev = null)
         {
             Compositions = newDeltas;
             Cash = value - VectorMath.Dot(newDeltas, feed.SpotList);
@@ -42,7 +42,7 @@ namespace HedgingEngine.Portfolio
             return VectorMath.Dot(Compositions, data.SpotList) + Cash * Math.Exp(interestRate * deltaTime);
         }
 
-        private void RecordState(double value, double price = 0, double priceStdDev = 0, List<double> deltaStdDev = null)
+        private void RecordState(double value, double price = 0, double priceStdDev = 0, List<double>? deltaStdDev = null)
         {
             History.Add(new PortfolioState(
                 Date,

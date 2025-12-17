@@ -7,8 +7,7 @@
 #include "ConditionalBasketOption.hpp"
 #include "ConditionalMaxOption.hpp"
 
-BlackScholesPricer::BlackScholesPricer(nlohmann::json &jsonParams)
-{
+BlackScholesPricer::BlackScholesPricer(nlohmann::json &jsonParams) {
     jsonParams.at("VolCholeskyLines").get_to(volatility);
     jsonParams.at("MathPaymentDates").get_to(paymentDates);
     jsonParams.at("Strikes").get_to(strikes);
@@ -34,11 +33,11 @@ BlackScholesPricer::BlackScholesPricer(nlohmann::json &jsonParams)
 
     model = new BlackScholesModel(jsonParams);
     rng = pnl_rng_create(PNL_RNG_MERSENNE);
-    pnl_rng_sseed(rng, time(NULL));
+    // pnl_rng_sseed(rng, time(NULL));
+    pnl_rng_sseed(rng, 42);
 }
 
-BlackScholesPricer::~BlackScholesPricer()
-{
+BlackScholesPricer::~BlackScholesPricer() {
     pnl_vect_free(&paymentDates);
     pnl_vect_free(&strikes);
     pnl_mat_free(&volatility);
@@ -47,8 +46,7 @@ BlackScholesPricer::~BlackScholesPricer()
     delete opt;
 }
 
-void BlackScholesPricer::print()
-{
+void BlackScholesPricer::print() {
     std::cout << "nAssets: " << nAssets << std::endl;
     std::cout << "fdStep: " << fdStep << std::endl;
     std::cout << "nSamples: " << nSamples << std::endl;
@@ -58,10 +56,7 @@ void BlackScholesPricer::print()
     pnl_vect_print_asrow(paymentDates);
 }
 
-void BlackScholesPricer::priceAndDeltas(const PnlMat *past, double currentDate, bool isMonitoringDate,
-                                         double &price, double &priceStdDev,
-                                         PnlVect* &deltas, PnlVect* &deltasStdDev)
-{
+void BlackScholesPricer::priceAndDeltas(const PnlMat *past, double currentDate, bool isMonitoringDate, double &price, double &priceStdDev, PnlVect *&deltas, PnlVect *&deltasStdDev) {
     price = 0.;
     priceStdDev = 0.;
     deltas = pnl_vect_create_from_zero(nAssets);
@@ -86,19 +81,17 @@ void BlackScholesPricer::priceAndDeltas(const PnlMat *past, double currentDate, 
         shiftIdx = lastIndex;
     }
 
-    for (int j = 0; j < nSamples; j++)
-    {
+    for (int j = 0; j < nSamples; j++) {
         model->asset(past, currentDate, lastIndex, path, rng);
         payoff = opt->payoff(path);
         esp += payoff;
         esp2 += payoff * payoff;
-        for (int d = 0; d < nAssets; d++)
-        {
+        for (int d = 0; d < nAssets; d++) {
             pnl_mat_clone(shiftPath, path);
-            model->shift_asset(d, shiftIdx, 1 + fdStep, shiftPath);//je passe shiftIdx au lieu de last
+            model->shift_asset(d, shiftIdx, 1 + fdStep, shiftPath); // je passe shiftIdx au lieu de last
             payoff_plus = opt->payoff(shiftPath);
             pnl_mat_clone(shiftPath, path);
-            model->shift_asset(d, shiftIdx, 1 - fdStep, shiftPath); 
+            model->shift_asset(d, shiftIdx, 1 - fdStep, shiftPath);
             payoff_minus = opt->payoff(shiftPath);
             delta_d = payoff_plus - payoff_minus;
             pnl_vect_set(deltas, d, pnl_vect_get(deltas, d) + delta_d);
@@ -115,8 +108,7 @@ void BlackScholesPricer::priceAndDeltas(const PnlMat *past, double currentDate, 
     double espDelta = exprT_t / (2 * fdStep * nSamples);
     double esp2Delta = espDelta * espDelta * nSamples;
     double st, fact;
-    for (int d = 0; d < opt->size; d++)
-    {
+    for (int d = 0; d < opt->size; d++) {
         st = pnl_mat_get(past, past->m - 1, d);
         delta_d = pnl_vect_get(deltas, d);
         pnl_vect_set(deltas, d, delta_d * espDelta / st);
