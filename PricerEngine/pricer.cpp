@@ -141,9 +141,14 @@ void BlackScholesPricer::priceAndDeltas(const PnlMat *past, double currentDate, 
     for (int d = 0; d < nAssets; d++) {
         st = pnl_mat_get(past, past->m - 1, d);
         delta_d = pnl_vect_get(deltas, d);
-        pnl_vect_set(deltas, d, delta_d * espDelta / st);
-        double tmp = delta_d / (2 * fdStep * nSamples * st);
-        fact = pnl_vect_get(deltasStdDev, d) * (esp2Delta / (st * st)) - tmp * tmp;
+        
+        // Calcul du delta actualisé (Moyenne)
+        double trueDelta = delta_d * espDelta / st;
+        pnl_vect_set(deltas, d, trueDelta);
+
+        // Calcul de la variance: E[X^2] - (E[X])^2
+        // On utilise trueDelta qui est correctement actualisé
+        fact = pnl_vect_get(deltasStdDev, d) * (esp2Delta / (st * st)) - trueDelta * trueDelta;
         pnl_vect_set(deltasStdDev, d, sqrt(fabs(fact) / nSamples));
     }
 
