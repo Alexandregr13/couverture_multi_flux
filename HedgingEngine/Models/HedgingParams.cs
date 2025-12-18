@@ -16,7 +16,7 @@ namespace HedgingEngine.Models
 
         public HedgingParams(TestParameters testParams)
         {
-            UnderlyingIds = testParams.AssetDescription.UnderlyingCurrencyCorrespondence.Keys.OrderBy(k => k).ToArray();
+            UnderlyingIds = testParams.AssetDescription.UnderlyingCurrencyCorrespondence.Keys.OrderBy(k => k).ToArray(); // trier les IDs dans l'ordre alphabetique "au cas où"
             PaymentDates = testParams.PayoffDescription.PaymentDates;
             InterestRate = testParams.AssetDescription.CurrencyRates[testParams.AssetDescription.DomesticCurrencyId];
             CreationDate = testParams.PayoffDescription.CreationDate;

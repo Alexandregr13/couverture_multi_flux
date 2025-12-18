@@ -21,11 +21,9 @@ namespace HedgingEngine.IO
                 priceStdDev = h.PriceStdDev
             }).ToList();
 
-            var options = new JsonSerializerOptions 
-            { 
-                WriteIndented = true
-            };
-            
+            var options = new JsonSerializerOptions();
+            options.WriteIndented = true;
+
             File.WriteAllText(outputFile, JsonSerializer.Serialize(outputData, options));
         }
     }

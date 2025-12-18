@@ -5,8 +5,8 @@ namespace HedgingEngine.Services
 {
     public class GrpcPricerClient
     {
-        private readonly GrpcChannel _channel;
-        private readonly GrpcPricer.GrpcPricerClient _client;
+        private readonly GrpcChannel _channel; // canal de communication
+        private readonly GrpcPricer.GrpcPricerClient _client; // client (généré par protobuf)
 
         public GrpcPricerClient(string serverAddress)
         {
