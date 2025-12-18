@@ -7,11 +7,11 @@
 class Option
 {
 public:
-    double T; // maturité
-    int nbTimeSteps; // nombre de step
-    int size; // dimsnesion de l'opition
-    PnlVect *strikes; // strike 
-    PnlVect *dates;  // dates de paiement de l'opiton
+    double T;
+    int nbTimeSteps;
+    int size;
+    PnlVect *strikes;
+    PnlVect *dates;
 
     Option(double T_, int nbTimeSteps_, int size_, PnlVect *strikes_, PnlVect *dates_);
     virtual ~Option();

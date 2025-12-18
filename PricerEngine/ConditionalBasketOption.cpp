@@ -12,6 +12,7 @@ ConditionalBasketOption::~ConditionalBasketOption()
 {
 }
 
+// Calcul du payoff pour l'option panier conditionnelle (avec capitalisation jusqu'à T)
 double ConditionalBasketOption::payoff(const PnlMat *path, CapitalizationFunc capitalize)
 {
     double totalPayoff = 0.0;

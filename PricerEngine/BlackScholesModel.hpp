@@ -9,11 +9,11 @@
 class BlackScholesModel
 {
 public:
-    int nAssets;           // nb d'actifs
-    double interestRate;   // taux sans risque
-    PnlMat *volatility;    // matrice de Cholesky
-    PnlVect *vectVol;      // vecteur des volatilités 
-    PnlVect *G;            // vecteur g de la formule
+    int nAssets;
+    double interestRate;
+    PnlMat *volatility;
+    PnlVect *vectVol;
+    PnlVect *G;
 
 public:
     BlackScholesModel(int nAssets_, double interestRate_, PnlMat *volatility_);

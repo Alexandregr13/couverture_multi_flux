@@ -17,7 +17,7 @@ using grpc::ServerContext;
 using grpc::Status;
 
 PnlMat* convertPastToPnlMat(const PricingInput *input) {
-    // Find size
+    // Récupère les dimensions
     int m, n;
     m = input->past_size();
     if (m == 0) {
@@ -31,7 +31,7 @@ PnlMat* convertPastToPnlMat(const PricingInput *input) {
             return NULL;
         }
     }
-    // Parse data
+    // Remplit la matrice past
     PnlMat *past = pnl_mat_create(m, n);
     for (int i = 0; i < input->past_size(); i++) {
         const PastLines &pastLine = input->past(i);
@@ -42,7 +42,7 @@ PnlMat* convertPastToPnlMat(const PricingInput *input) {
     return past;
 }
 
-// Logic and data behind the server's behavior.
+// Implémentation du service gRPC
 class GrpcPricerImpl final : public GrpcPricer::Service {
 public:
     BlackScholesPricer &pricer;
@@ -72,13 +72,14 @@ public:
     }
 
     Status Heartbeat(ServerContext *context, const Empty* input, ReqInfo *output) override {
-        output->set_domesticinterestrate(pricer.model->interestRate); // modifier pour mettre dans model au lieu de pricer.interestRate
+        output->set_domesticinterestrate(pricer.model->interestRate);
         output->set_relativefinitedifferencestep(pricer.fdStep);
         output->set_samplenb(pricer.nSamples);
         return Status::OK;
     }
 };
 
+// Fonction pour lancer le serveur gRPC
 void RunServer(nlohmann::json &jsonParams) {
     std::string server_address("0.0.0.0:50051");
     BlackScholesPricer pricer(jsonParams);
@@ -88,17 +89,14 @@ void RunServer(nlohmann::json &jsonParams) {
     grpc::EnableDefaultHealthCheckService(true);
     grpc::reflection::InitProtoReflectionServerBuilderPlugin();
     ServerBuilder builder;
-    // Listen on the given address without any authentication mechanism.
+
     builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());
-    // Register "service" as the instance through which we'll communicate with
-    // clients. In this case it corresponds to a *synchronous* service.
+
     builder.RegisterService(&service);
-    // Finally assemble the server.
+
     std::unique_ptr<Server> server(builder.BuildAndStart());
     std::cout << "Server listening on " << server_address << std::endl;
 
-    // Wait for the server to shutdown. Note that some other thread must be
-    // responsible for shutting down the server for this call to ever return.
     server->Wait();
 }
 

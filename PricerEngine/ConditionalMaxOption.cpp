@@ -12,6 +12,7 @@ ConditionalMaxOption::~ConditionalMaxOption()
 {
 }
 
+// Calcul du payoff pour l'option max conditionnelle (avec capitalisation jusqu'à T)
 double ConditionalMaxOption::payoff(const PnlMat *path, CapitalizationFunc capitalize)
 {
     double totalPayoff = 0.0;

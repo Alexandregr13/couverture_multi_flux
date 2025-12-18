@@ -27,14 +27,14 @@ void BlackScholesModel::asset(const PnlMat *past, double t, int lastIndex,
 {
     double r = this->interestRate;
 
-    // Si dernière date on copie past dans path
+    // Si dernière date, copie et return
     if (lastIndex == path->m - 1)
     {
         pnl_mat_extract_subblock(path, past, 0, path->m, 0, path->n);
         return;
     }
 
-    // Copie obs dans path
+    // Copie de past dans path
     pnl_mat_set_subblock(path, past, 0, 0);
 
     pnl_vect_rng_normal(G, nAssets, rng);
@@ -49,7 +49,7 @@ void BlackScholesModel::asset(const PnlMat *past, double t, int lastIndex,
                                                     + sqrt(dt) * pnl_vect_scalar_prod(&L_d, G));
     }
 
-    // pas suivants entre les dates de simulation
+    // Simulation des pas suivants entre les dates de simulation
     for (int i = lastIndex + 2; i < path->m; i++)
     {
         pnl_vect_rng_normal(G, nAssets, rng);
