@@ -5,7 +5,7 @@ using HedgingEngine.IO;
 
 namespace HedgingEngine.Core
 {
-    public class BacktestEngine
+    public class HedgeEngine
     {
         public async Task RunAsync(string financialParamFile, string marketDataFile, string outputFile)
         {

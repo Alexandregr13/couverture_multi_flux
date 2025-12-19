@@ -12,7 +12,7 @@ namespace HedgingEngine
                 return 1;
             }
 
-            var backtest = new BacktestEngine();
+            var backtest = new HedgeEngine();
             await backtest.RunAsync(args[0], args[1], args[2]);
             return 0;
         }
